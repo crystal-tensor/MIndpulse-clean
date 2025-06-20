@@ -36,39 +36,54 @@ MindPulse是一个基于Next.js构建的智能决策与意识探索平台，集�
 - **量子计算**: 自研VQE算法引擎
 - **AI集成**: 支持多种大模型API (DeepSeek, OpenAI, Claude等)
 
-## 安装与运行
+## 🚀 快速开始
 
 ### 环境要求
 - Node.js 18+ 
 - npm 或 yarn
 
+### ⚠️ 重要提醒
+**项目克隆后必须执行以下两个步骤才能正常运行：**
+
 ### 安装步骤
 
-1. 克隆项目
+1. **克隆项目**
 ```bash
-git clone <your-repo-url>
-cd MindPulse-Clean
+git clone https://github.com/crystal-tensor/MindPulse.git
+cd MindPulse
 ```
 
-2. 安装依赖
+2. **安装依赖** (⚠️ 必须先执行)
 ```bash
 npm install
 ```
+> **注意**: 这一步会安装所有必要的依赖包，包括React、Next.js等，大约需要几分钟时间
 
-3. 环境配置
+3. **环境配置** (可选)
 创建 `.env.local` 文件并配置API密钥：
 ```env
 DEEPSEEK_API_KEY=your_deepseek_api_key
 OPENAI_API_KEY=your_openai_api_key
 ```
 
-4. 启动开发服务器
+4. **启动开发服务器** (⚠️ 安装依赖后执行)
 ```bash
 npm run dev
 ```
 
-5. 访问应用
+5. **访问应用**
 打开浏览器访问 `http://localhost:3000`
+
+## 🔧 常见问题
+
+### Q: 为什么克隆后直接运行 `npm run dev` 会出错？
+A: 项目仓库不包含 `node_modules` 目录（为了减小仓库体积），必须先运行 `npm install` 安装依赖。
+
+### Q: `npm install` 需要多长时间？
+A: 首次安装大约需要3-5分钟，取决于网络速度。安装完成后，`node_modules` 目录大约800MB。
+
+### Q: 如何清理项目体积？
+A: 可以删除 `node_modules` 和 `.next` 目录来节省空间，需要运行时再重新 `npm install`。
 
 ## 项目结构
 
