@@ -174,13 +174,19 @@ export default function MindPulseHeader() {
     e.preventDefault();
     if (urlInput.trim()) {
       const processedUrl = urlInput.trim();
-      
+
       // 检查是否为外部网址
-      if (processedUrl.startsWith('http://') || processedUrl.startsWith('https://') || 
-          (!processedUrl.startsWith('mindpulse://') && processedUrl.includes('.'))) {
+      if (
+        processedUrl.startsWith("http://") ||
+        processedUrl.startsWith("https://") ||
+        (!processedUrl.startsWith("mindpulse://") && processedUrl.includes("."))
+      ) {
         // 外部网址，打开全屏浏览器
         let finalUrl = processedUrl;
-        if (!processedUrl.startsWith('http://') && !processedUrl.startsWith('https://')) {
+        if (
+          !processedUrl.startsWith("http://") &&
+          !processedUrl.startsWith("https://")
+        ) {
           finalUrl = `https://${processedUrl}`;
         }
         setFullScreenUrl(finalUrl);
@@ -248,13 +254,9 @@ export default function MindPulseHeader() {
         sidebarCollapsed ? "left-16" : "left-64",
         isMobile && "left-0",
       )}
-      data-oid="6i195mo"
     >
       {/* 能量粒子背景 */}
-      <div
-        className="absolute inset-0 overflow-hidden pointer-events-none"
-        data-oid="dwh9oi9"
-      >
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(12)].map((_, i) => (
           <div
             key={i}
@@ -264,20 +266,13 @@ export default function MindPulseHeader() {
               top: `${10 + (i % 4) * 20}%`,
               animationDelay: `${i * 0.3}s`,
             }}
-            data-oid="t49kh74"
           />
         ))}
       </div>
 
       {/* 标签页栏 */}
-      <div
-        className="flex items-center px-2 py-1 border-b border-gray-700/50 relative z-10"
-        data-oid="ctxjx-h"
-      >
-        <div
-          className="flex items-center space-x-1 flex-1 min-w-0"
-          data-oid="osdl4u2"
-        >
+      <div className="flex items-center px-2 py-1 border-b border-gray-700/50 relative z-10">
+        <div className="flex items-center space-x-1 flex-1 min-w-0">
           {tabs.map((tab) => (
             <div
               key={tab.id}
@@ -289,18 +284,11 @@ export default function MindPulseHeader() {
                   : "bg-gray-900/50 hover:bg-gray-800/70",
               )}
               onClick={() => handleSwitchTab(tab.id)}
-              data-oid="mh63ls7"
             >
               {tab.isLoading && (
-                <div
-                  className="w-3 h-3 border border-cyan-400 border-t-transparent rounded-full animate-spin mr-2"
-                  data-oid="wr7vjom"
-                />
+                <div className="w-3 h-3 border border-cyan-400 border-t-transparent rounded-full animate-spin mr-2" />
               )}
-              <span
-                className="text-xs text-gray-300 truncate flex-1"
-                data-oid="dje-u1k"
-              >
+              <span className="text-xs text-gray-300 truncate flex-1">
                 {tab.title}
               </span>
               {tabs.length > 1 && (
@@ -310,12 +298,8 @@ export default function MindPulseHeader() {
                     handleCloseTab(tab.id);
                   }}
                   className="ml-2 p-0.5 hover:bg-gray-700 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                  data-oid="weeexlt"
                 >
-                  <XMarkIcon
-                    className="w-3 h-3 text-gray-400"
-                    data-oid="d-d:pvh"
-                  />
+                  <XMarkIcon className="w-3 h-3 text-gray-400" />
                 </button>
               )}
             </div>
@@ -326,20 +310,16 @@ export default function MindPulseHeader() {
             onClick={handleAddNewTab}
             className="p-1.5 hover:bg-gray-800 rounded transition-colors"
             title="新建标签页"
-            data-oid="gepoz51"
           >
-            <PlusIcon className="w-4 h-4 text-gray-400" data-oid="smh62-h" />
+            <PlusIcon className="w-4 h-4 text-gray-400" />
           </button>
         </div>
       </div>
 
       {/* 主要导航栏 */}
-      <div
-        className="flex items-center px-4 py-2 relative z-10"
-        data-oid="b2q8tsb"
-      >
+      <div className="flex items-center px-4 py-2 relative z-10">
         {/* 导航控制按钮 */}
-        <div className="flex items-center space-x-1 mr-4" data-oid="yqf.5q6">
+        <div className="flex items-center space-x-1 mr-4">
           <button
             onClick={handleBack}
             disabled={historyIndex <= 0}
@@ -350,9 +330,8 @@ export default function MindPulseHeader() {
                 : "text-cyan-400 hover:bg-cyan-500/20",
             )}
             title="后退"
-            data-oid="kfgq4_5"
           >
-            <ArrowLeftIcon className="w-4 h-4" data-oid="uj5j3rs" />
+            <ArrowLeftIcon className="w-4 h-4" />
           </button>
           <button
             onClick={handleForward}
@@ -364,51 +343,34 @@ export default function MindPulseHeader() {
                 : "text-cyan-400 hover:bg-cyan-500/20",
             )}
             title="前进"
-            data-oid="665bphn"
           >
-            <ArrowRightIcon className="w-4 h-4" data-oid="9wwlqtv" />
+            <ArrowRightIcon className="w-4 h-4" />
           </button>
           <button
             onClick={handleRefresh}
             className="p-2 rounded-lg text-cyan-400 hover:bg-cyan-500/20 transition-colors"
             title="刷新"
-            data-oid="h3lku8n"
           >
             <ArrowPathIcon
               className={clsx("w-4 h-4", isLoading && "animate-spin")}
-              data-oid=":ppbz.x"
             />
           </button>
           <button
             onClick={handleHome}
             className="p-2 rounded-lg text-cyan-400 hover:bg-cyan-500/20 transition-colors"
             title="主页"
-            data-oid="yrr5y3v"
           >
-            <HomeIcon className="w-4 h-4" data-oid="j._puwk" />
+            <HomeIcon className="w-4 h-4" />
           </button>
         </div>
 
         {/* 地址栏 */}
-        <form
-          onSubmit={handleUrlSubmit}
-          className="flex-1 max-w-2xl mx-4"
-          data-oid="2b8-_cf"
-        >
-          <div className="relative group" data-oid="xwc4.p4">
+        <form onSubmit={handleUrlSubmit} className="flex-1 max-w-2xl mx-4">
+          <div className="relative group">
             {!isUrlEditing && (
-              <div
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10"
-                data-oid="7y42h90"
-              >
-                <div
-                  className="w-4 h-4 rounded-full bg-green-400 flex items-center justify-center"
-                  data-oid="u629.k1"
-                >
-                  <div
-                    className="w-2 h-2 rounded-full bg-white"
-                    data-oid="1fxzjux"
-                  />
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
+                <div className="w-4 h-4 rounded-full bg-green-400 flex items-center justify-center">
+                  <div className="w-2 h-2 rounded-full bg-white" />
                 </div>
               </div>
             )}
@@ -435,65 +397,42 @@ export default function MindPulseHeader() {
                 "text-sm leading-normal",
                 isUrlEditing ? "pl-3 pr-4" : "pl-8 pr-4",
               )}
-              data-oid="ycn39lz"
             />
 
             {isLoading && (
-              <div
-                className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                data-oid="r7hw9a5"
-              >
-                <div
-                  className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin"
-                  data-oid=".t38af6"
-                />
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <div className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
               </div>
             )}
           </div>
         </form>
 
         {/* 右侧功能按钮 */}
-        <div className="flex items-center space-x-2" data-oid="4iz2p2w">
+        <div className="flex items-center space-x-2">
           {/* 书签按钮 */}
-          <div className="relative" data-oid="f85pujy">
+          <div className="relative">
             <button
               onClick={() => setShowBookmarks(!showBookmarks)}
               className="p-2 rounded-lg text-cyan-400 hover:bg-cyan-500/20 transition-colors"
               title="书签"
-              data-oid="1pfwdq_"
             >
-              <BookmarkIcon className="w-4 h-4" data-oid="5y7mbjm" />
+              <BookmarkIcon className="w-4 h-4" />
             </button>
 
             {showBookmarks && (
-              <div
-                className="absolute top-full right-0 mt-2 w-64 bg-gray-800 border border-cyan-500/30 rounded-lg shadow-xl z-50"
-                data-oid="h.4yhmp"
-              >
-                <div
-                  className="p-3 border-b border-gray-700"
-                  data-oid="g7uhv0y"
-                >
-                  <div
-                    className="flex items-center justify-between"
-                    data-oid="u:tq:x0"
-                  >
-                    <h3
-                      className="text-sm font-medium text-white"
-                      data-oid="v._14cz"
-                    >
-                      书签
-                    </h3>
+              <div className="absolute top-full right-0 mt-2 w-64 bg-gray-800 border border-cyan-500/30 rounded-lg shadow-xl z-50">
+                <div className="p-3 border-b border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-medium text-white">书签</h3>
                     <button
                       onClick={handleAddBookmark}
                       className="text-xs text-cyan-400 hover:text-cyan-300"
-                      data-oid="z.9dnaq"
                     >
                       添加当前页
                     </button>
                   </div>
                 </div>
-                <div className="max-h-64 overflow-y-auto" data-oid="z04twm7">
+                <div className="max-h-64 overflow-y-auto">
                   {bookmarks.map((bookmark) => (
                     <button
                       key={bookmark.id}
@@ -502,18 +441,11 @@ export default function MindPulseHeader() {
                         setShowBookmarks(false);
                       }}
                       className="w-full px-3 py-2 text-left hover:bg-gray-700 transition-colors"
-                      data-oid="t8w--sr"
                     >
-                      <div
-                        className="text-sm text-white truncate"
-                        data-oid="_c1mzun"
-                      >
+                      <div className="text-sm text-white truncate">
                         {bookmark.title}
                       </div>
-                      <div
-                        className="text-xs text-gray-400 truncate"
-                        data-oid="v8gtwws"
-                      >
+                      <div className="text-xs text-gray-400 truncate">
                         {bookmark.url}
                       </div>
                     </button>
@@ -524,22 +456,18 @@ export default function MindPulseHeader() {
           </div>
 
           {/* 语言切换 */}
-          <div className="relative" data-oid="4ee4bk7">
+          <div className="relative">
             <button
               onClick={() => setShowLanguages(!showLanguages)}
               className="flex items-center space-x-1 p-2 rounded-lg text-cyan-400 hover:bg-cyan-500/20 transition-colors"
               title="语言"
-              data-oid="7whos6k"
             >
-              <GlobeAltIcon className="w-4 h-4" data-oid="-mwaq3j" />
-              <ChevronDownIcon className="w-3 h-3" data-oid="u.0zn2i" />
+              <GlobeAltIcon className="w-4 h-4" />
+              <ChevronDownIcon className="w-3 h-3" />
             </button>
 
             {showLanguages && (
-              <div
-                className="absolute top-full right-0 mt-2 w-40 bg-gray-800 border border-cyan-500/30 rounded-lg shadow-xl z-50"
-                data-oid="8p9ktvl"
-              >
+              <div className="absolute top-full right-0 mt-2 w-40 bg-gray-800 border border-cyan-500/30 rounded-lg shadow-xl z-50">
                 {languages.map((lang) => (
                   <button
                     key={lang.code}
@@ -551,12 +479,9 @@ export default function MindPulseHeader() {
                       "w-full flex items-center space-x-2 px-3 py-2 text-left hover:bg-gray-700 transition-colors",
                       currentLanguage === lang.name && "bg-gray-700",
                     )}
-                    data-oid="yiw9vfj"
                   >
-                    <span data-oid="r-bfgq1">{lang.flag}</span>
-                    <span className="text-sm text-white" data-oid="exoug4c">
-                      {lang.name}
-                    </span>
+                    <span>{lang.flag}</span>
+                    <span className="text-sm text-white">{lang.name}</span>
                   </button>
                 ))}
               </div>
@@ -567,14 +492,10 @@ export default function MindPulseHeader() {
           <button
             className="relative p-2 rounded-lg text-cyan-400 hover:bg-cyan-500/20 transition-colors"
             title="通知"
-            data-oid="q-4yqpy"
           >
-            <BellIcon className="w-4 h-4" data-oid="cf59gtk" />
+            <BellIcon className="w-4 h-4" />
             {unreadCount > 0 && (
-              <span
-                className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
-                data-oid="qz7ap-e"
-              >
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                 {unreadCount > 9 ? "9+" : unreadCount}
               </span>
             )}
@@ -584,65 +505,37 @@ export default function MindPulseHeader() {
           <button
             className="p-2 rounded-lg text-cyan-400 hover:bg-cyan-500/20 transition-colors"
             title="更多"
-            data-oid="0c7c1nh"
           >
-            <EllipsisHorizontalIcon className="w-4 h-4" data-oid="b3rb_v0" />
+            <EllipsisHorizontalIcon className="w-4 h-4" />
           </button>
 
           {/* 用户菜单 */}
-          <div className="relative" data-oid="vcw6vs:">
+          <div className="relative">
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
               className="flex items-center space-x-2 p-1 rounded-lg hover:bg-cyan-500/20 transition-colors"
-              data-oid="khdyi7n"
             >
-              <div
-                className="w-6 h-6 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full flex items-center justify-center"
-                data-oid="-qn0q.l"
-              >
-                <UserIcon className="w-4 h-4 text-white" data-oid="mnv4i3m" />
+              <div className="w-6 h-6 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full flex items-center justify-center">
+                <UserIcon className="w-4 h-4 text-white" />
               </div>
-              <ChevronDownIcon
-                className="w-3 h-3 text-gray-400"
-                data-oid="1v-9c0y"
-              />
+              <ChevronDownIcon className="w-3 h-3 text-gray-400" />
             </button>
 
             {showUserMenu && (
-              <div
-                className="absolute top-full right-0 mt-2 w-48 bg-gray-800 border border-cyan-500/30 rounded-lg shadow-xl z-50"
-                data-oid="pfmyb-c"
-              >
-                <div
-                  className="p-3 border-b border-gray-700"
-                  data-oid="ah_w_uq"
-                >
-                  <div
-                    className="text-sm font-medium text-white"
-                    data-oid="bba:xgg"
-                  >
-                    张小明
-                  </div>
-                  <div className="text-xs text-gray-400" data-oid="bn47sli">
+              <div className="absolute top-full right-0 mt-2 w-48 bg-gray-800 border border-cyan-500/30 rounded-lg shadow-xl z-50">
+                <div className="p-3 border-b border-gray-700">
+                  <div className="text-sm font-medium text-white">张小明</div>
+                  <div className="text-xs text-gray-400">
                     mindpulse@example.com
                   </div>
                 </div>
-                <div className="py-1" data-oid="5.8osc6">
-                  <button
-                    className="w-full flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-gray-700"
-                    data-oid="h:ud1g5"
-                  >
-                    <UserIcon className="w-4 h-4 mr-3" data-oid="142vlkj" />
+                <div className="py-1">
+                  <button className="w-full flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-gray-700">
+                    <UserIcon className="w-4 h-4 mr-3" />
                     个人资料
                   </button>
-                  <button
-                    className="w-full flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-gray-700"
-                    data-oid="7_05_40"
-                  >
-                    <Cog6ToothIcon
-                      className="w-4 h-4 mr-3"
-                      data-oid="31kx_ij"
-                    />
+                  <button className="w-full flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-gray-700">
+                    <Cog6ToothIcon className="w-4 h-4 mr-3" />
                     设置
                   </button>
                 </div>
@@ -653,7 +546,7 @@ export default function MindPulseHeader() {
       </div>
 
       {/* 自定义样式 */}
-      <style jsx data-oid=".clo8ng">{`
+      <style jsx>{`
         .energy-particle {
           position: absolute;
           width: 2px;

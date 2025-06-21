@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <MindPulseLayout data-oid="c4qnwj0">
-      <BrowserView className="h-full" data-oid="bzckdc:" />
+    <MindPulseLayout>
+      <BrowserView className="h-full" />
     </MindPulseLayout>
   );
 }

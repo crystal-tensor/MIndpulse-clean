@@ -71,7 +71,7 @@ export default function AIExplorationHub() {
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState("knowledge-graph");
-  
+
   // 设置状态
   const [showSettings, setShowSettings] = useState(false);
   const [settings, setSettings] = useState<Settings>({
@@ -105,7 +105,9 @@ export default function AIExplorationHub() {
   });
 
   // 布局状态
-  const [layoutMode, setLayoutMode] = useState<"both" | "chat-only" | "visualization-only">("both");
+  const [layoutMode, setLayoutMode] = useState<
+    "both" | "chat-only" | "visualization-only"
+  >("both");
   const [chatHeight, setChatHeight] = useState(40); // 百分比
 
   // 引用
@@ -118,12 +120,15 @@ export default function AIExplorationHub() {
     loadSettings();
     loadConversations();
     loadUploadedFiles();
-    
+
     // 添加欢迎消息
-    setMessages([{
-      role: "assistant",
-      content: "欢迎来到智核交互界面！我是您的AI认知探索伙伴，可以帮您分析问题、构建知识图谱、做出智能决策。请告诉我您想探讨的话题。",
-    }]);
+    setMessages([
+      {
+        role: "assistant",
+        content:
+          "欢迎来到智核交互界面！我是您的AI认知探索伙伴，可以帮您分析问题、构建知识图谱、做出智能决策。请告诉我您想探讨的话题。",
+      },
+    ]);
   }, []);
 
   // 自动滚动到底部
@@ -165,7 +170,7 @@ export default function AIExplorationHub() {
     }
 
     const userMessage: Message = { role: "user", content: inputValue };
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
     setIsLoading(true);
 
@@ -197,11 +202,11 @@ export default function AIExplorationHub() {
         formatted_content: data.response,
       };
 
-      setMessages(prev => [...prev, assistantMessage]);
+      setMessages((prev) => [...prev, assistantMessage]);
 
       // 更新图谱URLs
       if (data.knowledge_graph_url) {
-        setGraphUrls(prev => ({
+        setGraphUrls((prev) => ({
           ...prev,
           "knowledge-graph": data.knowledge_graph_url,
           "thought-chain": data.thought_chain_url || "",
@@ -211,7 +216,10 @@ export default function AIExplorationHub() {
       }
     } catch (error) {
       console.error("发送消息失败:", error);
-      showNotification(`发送失败: ${error instanceof Error ? error.message : "未知错误"}`, "error");
+      showNotification(
+        `发送失败: ${error instanceof Error ? error.message : "未知错误"}`,
+        "error",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -265,7 +273,9 @@ export default function AIExplorationHub() {
   // 加载对话
   const loadConversation = async (conversationId: string) => {
     try {
-      const response = await fetch(`/api/mindpilot/load_conversation/${conversationId}`);
+      const response = await fetch(
+        `/api/mindpilot/load_conversation/${conversationId}`,
+      );
       if (response.ok) {
         const data = await response.json();
         setMessages(data.chat_history || []);
@@ -282,9 +292,12 @@ export default function AIExplorationHub() {
     if (!confirm("确定要删除这个对话吗？")) return;
 
     try {
-      const response = await fetch(`/api/mindpilot/delete_conversation/${conversationId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/mindpilot/delete_conversation/${conversationId}`,
+        {
+          method: "DELETE",
+        },
+      );
 
       if (response.ok) {
         showNotification("对话删除成功", "success");
@@ -310,7 +323,7 @@ export default function AIExplorationHub() {
 
       if (response.ok) {
         const data = await response.json();
-        setGraphUrls(prev => ({
+        setGraphUrls((prev) => ({
           ...prev,
           "knowledge-graph": data.graph_url,
         }));
@@ -323,13 +336,15 @@ export default function AIExplorationHub() {
   };
 
   // 文件上传
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
     setIsUploading(true);
     const formData = new FormData();
-    
+
     for (let i = 0; i < files.length; i++) {
       formData.append("files", files[i]);
     }
@@ -342,7 +357,10 @@ export default function AIExplorationHub() {
 
       if (response.ok) {
         const data = await response.json();
-        showNotification(`成功上传 ${data.uploaded_files?.length || 0} 个文件`, "success");
+        showNotification(
+          `成功上传 ${data.uploaded_files?.length || 0} 个文件`,
+          "success",
+        );
         loadUploadedFiles();
       }
     } catch (error) {
@@ -367,7 +385,10 @@ export default function AIExplorationHub() {
   };
 
   // 通知系统
-  const showNotification = (message: string, type: "success" | "error" = "success") => {
+  const showNotification = (
+    message: string,
+    type: "success" | "error" = "success",
+  ) => {
     // 这里可以集成更复杂的通知系统
     console.log(`${type.toUpperCase()}: ${message}`);
   };
@@ -435,7 +456,9 @@ export default function AIExplorationHub() {
             >
               <DocumentArrowUpIcon className="w-5 h-5 text-gray-400 group-hover:text-purple-400" />
               <span className="text-sm">上传文件</span>
-              {isUploading && <div className="w-4 h-4 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />}
+              {isUploading && (
+                <div className="w-4 h-4 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
+              )}
             </button>
 
             <button
@@ -449,12 +472,22 @@ export default function AIExplorationHub() {
 
           {/* 布局控制 */}
           <div className="p-4 border-t border-gray-700/50">
-            <h4 className="text-xs text-gray-400 uppercase tracking-wider mb-3">界面布局</h4>
+            <h4 className="text-xs text-gray-400 uppercase tracking-wider mb-3">
+              界面布局
+            </h4>
             <div className="grid grid-cols-3 gap-2">
               {[
                 { mode: "both", icon: Squares2X2Icon, label: "双栏" },
-                { mode: "chat-only", icon: ChatBubbleLeftRightIcon, label: "对话" },
-                { mode: "visualization-only", icon: RectangleStackIcon, label: "可视化" },
+                {
+                  mode: "chat-only",
+                  icon: ChatBubbleLeftRightIcon,
+                  label: "对话",
+                },
+                {
+                  mode: "visualization-only",
+                  icon: RectangleStackIcon,
+                  label: "可视化",
+                },
               ].map(({ mode, icon: Icon, label }) => (
                 <button
                   key={mode}
@@ -463,7 +496,7 @@ export default function AIExplorationHub() {
                     "flex flex-col items-center space-y-1 p-2 rounded-lg transition-all duration-300",
                     layoutMode === mode
                       ? "bg-cyan-500/20 border border-cyan-500/50 text-cyan-400"
-                      : "bg-gray-700/50 hover:bg-gray-600/50 text-gray-400"
+                      : "bg-gray-700/50 hover:bg-gray-600/50 text-gray-400",
                   )}
                 >
                   <Icon className="w-4 h-4" />
@@ -475,7 +508,9 @@ export default function AIExplorationHub() {
 
           {/* 对话历史列表 */}
           <div className="flex-1 p-4 overflow-y-auto">
-            <h4 className="text-xs text-gray-400 uppercase tracking-wider mb-3">对话历史</h4>
+            <h4 className="text-xs text-gray-400 uppercase tracking-wider mb-3">
+              对话历史
+            </h4>
             <div className="space-y-2">
               {conversations.map((conv) => (
                 <div
@@ -483,7 +518,9 @@ export default function AIExplorationHub() {
                   className="bg-gray-700/30 rounded-lg p-3 hover:bg-gray-600/30 transition-all duration-300 group"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <h5 className="text-sm font-medium text-white truncate">{conv.name}</h5>
+                    <h5 className="text-sm font-medium text-white truncate">
+                      {conv.name}
+                    </h5>
                     <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => loadConversation(conv.id)}
@@ -510,7 +547,8 @@ export default function AIExplorationHub() {
                     </div>
                   </div>
                   <div className="text-xs text-gray-400">
-                    {conv.message_count} 条消息 • {new Date(conv.created_at).toLocaleDateString()}
+                    {conv.message_count} 条消息 •{" "}
+                    {new Date(conv.created_at).toLocaleDateString()}
                   </div>
                 </div>
               ))}
@@ -519,11 +557,15 @@ export default function AIExplorationHub() {
 
           {/* 文件列表 */}
           <div className="p-4 border-t border-gray-700/50">
-            <h4 className="text-xs text-gray-400 uppercase tracking-wider mb-3">已上传文件</h4>
+            <h4 className="text-xs text-gray-400 uppercase tracking-wider mb-3">
+              已上传文件
+            </h4>
             <div className="space-y-2 max-h-32 overflow-y-auto">
               {uploadedFiles.map((file, index) => (
                 <div key={index} className="bg-gray-700/30 rounded p-2">
-                  <div className="text-xs font-medium text-white truncate">{file.filename}</div>
+                  <div className="text-xs font-medium text-white truncate">
+                    {file.filename}
+                  </div>
                   <div className="text-xs text-gray-400">
                     {(file.file_size / 1024).toFixed(1)} KB
                   </div>
@@ -539,13 +581,22 @@ export default function AIExplorationHub() {
           {showSettings && (
             <div className="bg-gray-800/90 backdrop-blur-xl border-b border-cyan-500/20 p-6">
               <div className="max-w-4xl mx-auto">
-                <h3 className="text-lg font-semibold text-white mb-4">模型配置</h3>
+                <h3 className="text-lg font-semibold text-white mb-4">
+                  模型配置
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">提供方</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      提供方
+                    </label>
                     <select
                       value={settings.provider}
-                      onChange={(e) => setSettings(prev => ({ ...prev, provider: e.target.value }))}
+                      onChange={(e) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          provider: e.target.value,
+                        }))
+                      }
                       className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white"
                     >
                       <option value="deepseek">DeepSeek</option>
@@ -554,47 +605,75 @@ export default function AIExplorationHub() {
                       <option value="claude">Anthropic Claude</option>
                     </select>
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">API密钥</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      API密钥
+                    </label>
                     <input
                       type="password"
                       value={settings.apiKey}
-                      onChange={(e) => setSettings(prev => ({ ...prev, apiKey: e.target.value }))}
+                      onChange={(e) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          apiKey: e.target.value,
+                        }))
+                      }
                       className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white"
                       placeholder="输入API密钥..."
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">模型名称</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      模型名称
+                    </label>
                     <input
                       type="text"
                       value={settings.modelName}
-                      onChange={(e) => setSettings(prev => ({ ...prev, modelName: e.target.value }))}
+                      onChange={(e) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          modelName: e.target.value,
+                        }))
+                      }
                       className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">温度 ({settings.temperature})</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      温度 ({settings.temperature})
+                    </label>
                     <input
                       type="range"
                       min="0"
                       max="2"
                       step="0.1"
                       value={settings.temperature}
-                      onChange={(e) => setSettings(prev => ({ ...prev, temperature: parseFloat(e.target.value) }))}
+                      onChange={(e) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          temperature: parseFloat(e.target.value),
+                        }))
+                      }
                       className="w-full"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">上下文窗口</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      上下文窗口
+                    </label>
                     <input
                       type="number"
                       value={settings.contextWindow}
-                      onChange={(e) => setSettings(prev => ({ ...prev, contextWindow: parseInt(e.target.value) }))}
+                      onChange={(e) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          contextWindow: parseInt(e.target.value),
+                        }))
+                      }
                       className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white"
                     />
                   </div>
@@ -603,9 +682,15 @@ export default function AIExplorationHub() {
                     <input
                       type="checkbox"
                       checked={settings.streamingResponse}
-                      onChange={(e) => setSettings(prev => ({ ...prev, streamingResponse: e.target.checked }))}
+                      onChange={(e) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          streamingResponse: e.target.checked,
+                        }))
+                      }
                       className="mr-2"
                     />
+
                     <label className="text-sm text-gray-300">流式响应</label>
                   </div>
                 </div>
@@ -631,11 +716,12 @@ export default function AIExplorationHub() {
           {/* 对话和可视化区域 */}
           <div className="flex-1 flex flex-col">
             {(layoutMode === "both" || layoutMode === "chat-only") && (
-              <div 
+              <div
                 className="bg-gray-800/30 backdrop-blur-xl border-b border-gray-700/50 flex flex-col"
-                style={{ 
-                  height: layoutMode === "chat-only" ? "100%" : `${chatHeight}%`,
-                  minHeight: layoutMode === "both" ? "200px" : "auto"
+                style={{
+                  height:
+                    layoutMode === "chat-only" ? "100%" : `${chatHeight}%`,
+                  minHeight: layoutMode === "both" ? "200px" : "auto",
                 }}
               >
                 {/* 消息区域 */}
@@ -645,7 +731,9 @@ export default function AIExplorationHub() {
                       key={index}
                       className={clsx(
                         "flex",
-                        message.role === "user" ? "justify-end" : "justify-start"
+                        message.role === "user"
+                          ? "justify-end"
+                          : "justify-start",
                       )}
                     >
                       <div
@@ -653,12 +741,13 @@ export default function AIExplorationHub() {
                           "max-w-[80%] rounded-2xl px-6 py-4 shadow-lg",
                           message.role === "user"
                             ? "bg-gradient-to-r from-cyan-500 to-purple-500 text-white"
-                            : "bg-gray-700/50 backdrop-blur-xl border border-gray-600/50 text-gray-100"
+                            : "bg-gray-700/50 backdrop-blur-xl border border-gray-600/50 text-gray-100",
                         )}
                       >
                         <div
                           dangerouslySetInnerHTML={{
-                            __html: message.formatted_content || message.content
+                            __html:
+                              message.formatted_content || message.content,
                           }}
                         />
                       </div>
@@ -672,12 +761,14 @@ export default function AIExplorationHub() {
                           <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
                           <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse delay-100" />
                           <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse delay-200" />
-                          <span className="text-gray-300 ml-2">AI正在思考...</span>
+                          <span className="text-gray-300 ml-2">
+                            AI正在思考...
+                          </span>
                         </div>
                       </div>
                     </div>
                   )}
-                  
+
                   <div ref={messagesEndRef} />
                 </div>
 
@@ -718,11 +809,17 @@ export default function AIExplorationHub() {
                 onMouseDown={(e) => {
                   const startY = e.clientY;
                   const startHeight = chatHeight;
-                  
+
                   const handleMouseMove = (e: MouseEvent) => {
                     const deltaY = e.clientY - startY;
                     const containerHeight = window.innerHeight - 200; // 大致的容器高度
-                    const newHeight = Math.max(20, Math.min(80, startHeight + (deltaY / containerHeight) * 100));
+                    const newHeight = Math.max(
+                      20,
+                      Math.min(
+                        80,
+                        startHeight + (deltaY / containerHeight) * 100,
+                      ),
+                    );
                     setChatHeight(newHeight);
                   };
 
@@ -743,11 +840,14 @@ export default function AIExplorationHub() {
 
             {/* 可视化区域 */}
             {(layoutMode === "both" || layoutMode === "visualization-only") && (
-              <div 
+              <div
                 className="bg-gray-800/30 backdrop-blur-xl flex flex-col"
-                style={{ 
-                  height: layoutMode === "visualization-only" ? "100%" : `${100 - chatHeight}%`,
-                  minHeight: layoutMode === "both" ? "200px" : "auto"
+                style={{
+                  height:
+                    layoutMode === "visualization-only"
+                      ? "100%"
+                      : `${100 - chatHeight}%`,
+                  minHeight: layoutMode === "both" ? "200px" : "auto",
                 }}
               >
                 {/* 标签页 */}
@@ -757,10 +857,10 @@ export default function AIExplorationHub() {
                     const tabLabels = {
                       "knowledge-graph": "知识图谱",
                       "thought-chain": "思维链",
-                      "cognitive-map": "认知图谱", 
+                      "cognitive-map": "认知图谱",
                       "decision-model": "决策模型",
                     };
-                    
+
                     return (
                       <button
                         key={tabName}
@@ -769,11 +869,13 @@ export default function AIExplorationHub() {
                           "flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300",
                           currentTab === tabName
                             ? "bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border border-cyan-500/50 text-cyan-400"
-                            : "bg-gray-700/30 hover:bg-gray-600/30 text-gray-400 hover:text-white"
+                            : "bg-gray-700/30 hover:bg-gray-600/30 text-gray-400 hover:text-white",
                         )}
                       >
                         <Icon className="w-4 h-4" />
-                        <span className="text-sm">{tabLabels[tabName as keyof typeof tabLabels]}</span>
+                        <span className="text-sm">
+                          {tabLabels[tabName as keyof typeof tabLabels]}
+                        </span>
                       </button>
                     );
                   })}
@@ -795,8 +897,12 @@ export default function AIExplorationHub() {
                         <div className="w-24 h-24 bg-gradient-to-br from-cyan-400/20 to-purple-500/20 rounded-2xl flex items-center justify-center mb-4 mx-auto">
                           <ChartBarIcon className="w-12 h-12 text-gray-400" />
                         </div>
-                        <h3 className="text-lg font-medium text-gray-300 mb-2">等待数据生成</h3>
-                        <p className="text-gray-500">开始对话以生成可视化图谱</p>
+                        <h3 className="text-lg font-medium text-gray-300 mb-2">
+                          等待数据生成
+                        </h3>
+                        <p className="text-gray-500">
+                          开始对话以生成可视化图谱
+                        </p>
                       </div>
                     </div>
                   )}
@@ -829,6 +935,7 @@ export default function AIExplorationHub() {
               placeholder="输入对话名称..."
               className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white mb-4"
             />
+
             <div className="flex justify-end space-x-3">
               <button
                 onClick={() => setShowSaveModal(false)}
@@ -851,13 +958,16 @@ export default function AIExplorationHub() {
       {showRenameModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-gray-800 border border-cyan-500/30 rounded-2xl p-6 w-96 shadow-2xl">
-            <h3 className="text-lg font-semibold text-white mb-4">重命名对话</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">
+              重命名对话
+            </h3>
             <input
               type="text"
               value={newConversationName}
               onChange={(e) => setNewConversationName(e.target.value)}
               className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white mb-4"
             />
+
             <div className="flex justify-end space-x-3">
               <button
                 onClick={() => setShowRenameModal(false)}
@@ -880,4 +990,4 @@ export default function AIExplorationHub() {
       )}
     </div>
   );
-} 
+}

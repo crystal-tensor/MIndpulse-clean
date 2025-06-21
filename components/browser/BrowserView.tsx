@@ -41,16 +41,12 @@ export default function BrowserView({ className }: BrowserViewProps) {
       ) {
         // 外部网站 - 使用iframe
         renderedContent = (
-          <div
-            className="w-full h-full bg-white rounded-lg overflow-hidden"
-            data-oid="26do3.-"
-          >
+          <div className="w-full h-full bg-white rounded-lg overflow-hidden">
             <iframe
               src={urlToRender}
               className="w-full h-full border-0"
               title="外部网站"
               sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
-              data-oid="2f177-5"
             />
           </div>
         );
@@ -60,23 +56,19 @@ export default function BrowserView({ className }: BrowserViewProps) {
           case "/":
           case "mindpulse://consciousness-hub":
             console.log("匹配到意识枢纽路由");
-            renderedContent = <ConsciousnessHub data-oid="zlw9_9g" />;
+            renderedContent = <ConsciousnessHub />;
             break;
           case "/knowledge-graph":
           case "mindpulse://knowledge-graph":
             renderedContent = (
-              <div className="text-center py-20" data-oid="bt.3sce">
-                <h1
-                  className="text-4xl font-bold text-cyan-400 mb-4"
-                  data-oid="xtm05cr"
-                >
+              <div className="text-center py-20">
+                <h1 className="text-4xl font-bold text-cyan-400 mb-4">
                   灵境回廊
                 </h1>
-                <p className="text-gray-300" data-oid="w2cr0.:">
-                  知识图谱社交网络正在开发中...
-                </p>
+                <p className="text-gray-300">知识图谱社交网络正在开发中...</p>
               </div>
             );
+
             break;
           case "/ai-exploration":
           case "mindpulse://ai-exploration":
@@ -85,94 +77,60 @@ export default function BrowserView({ className }: BrowserViewProps) {
           case "/quantum-decisions":
           case "mindpulse://quantum-decisions":
             renderedContent = (
-              <div className="text-center py-20" data-oid="akzcfcz">
-                <h1
-                  className="text-4xl font-bold text-green-400 mb-4"
-                  data-oid="lyj9nmr"
-                >
+              <div className="text-center py-20">
+                <h1 className="text-4xl font-bold text-green-400 mb-4">
                   命运织机
                 </h1>
-                <p className="text-gray-300" data-oid="mgd0tlc">
-                  量子决策系统正在开发中...
-                </p>
+                <p className="text-gray-300">量子决策系统正在开发中...</p>
               </div>
             );
+
             break;
           case "/marketplace":
           case "mindpulse://marketplace":
             renderedContent = (
-              <div className="text-center py-20" data-oid="2opygho">
-                <h1
-                  className="text-4xl font-bold text-yellow-400 mb-4"
-                  data-oid="ja8ry2:"
-                >
+              <div className="text-center py-20">
+                <h1 className="text-4xl font-bold text-yellow-400 mb-4">
                   奇点交易所
                 </h1>
-                <p className="text-gray-300" data-oid=".6:7:ux">
-                  价值交易平台正在开发中...
-                </p>
+                <p className="text-gray-300">价值交易平台正在开发中...</p>
               </div>
             );
+
             break;
           case "/profile":
           case "mindpulse://profile":
             renderedContent = (
-              <div className="text-center py-20" data-oid="kj.l329">
-                <h1
-                  className="text-4xl font-bold text-pink-400 mb-4"
-                  data-oid="2nrqm5s"
-                >
+              <div className="text-center py-20">
+                <h1 className="text-4xl font-bold text-pink-400 mb-4">
                   自我机体
                 </h1>
-                <p className="text-gray-300" data-oid="iajc5ck">
-                  个人中心正在开发中...
-                </p>
+                <p className="text-gray-300">个人中心正在开发中...</p>
               </div>
             );
+
             break;
           default:
             // 尝试作为搜索查询处理
             if (currentUrl && !currentUrl.startsWith("mindpulse://")) {
               renderedContent = (
-                <div className="text-center py-20" data-oid=".-0211a">
-                  <h1
-                    className="text-2xl font-bold text-cyan-400 mb-4"
-                    data-oid=".dlupub"
-                  >
+                <div className="text-center py-20">
+                  <h1 className="text-2xl font-bold text-cyan-400 mb-4">
                     搜索结果
                   </h1>
-                  <p className="text-gray-300 mb-8" data-oid="q-q1c8z">
-                    搜索词：{currentUrl}
-                  </p>
-                  <div
-                    className="max-w-2xl mx-auto space-y-4"
-                    data-oid="q9k97dm"
-                  >
-                    <div
-                      className="bg-gray-800/50 p-4 rounded-lg border border-cyan-500/20"
-                      data-oid=".mxnz0t"
-                    >
-                      <h3
-                        className="text-lg font-semibold text-white mb-2"
-                        data-oid="te9ptg1"
-                      >
+                  <p className="text-gray-300 mb-8">搜索词：{currentUrl}</p>
+                  <div className="max-w-2xl mx-auto space-y-4">
+                    <div className="bg-gray-800/50 p-4 rounded-lg border border-cyan-500/20">
+                      <h3 className="text-lg font-semibold text-white mb-2">
                         相关结果 1
                       </h3>
-                      <p className="text-gray-300" data-oid="cry9wk8">
-                        这是一个模拟的搜索结果...
-                      </p>
+                      <p className="text-gray-300">这是一个模拟的搜索结果...</p>
                     </div>
-                    <div
-                      className="bg-gray-800/50 p-4 rounded-lg border border-cyan-500/20"
-                      data-oid="6287j66"
-                    >
-                      <h3
-                        className="text-lg font-semibold text-white mb-2"
-                        data-oid="a1.bem6"
-                      >
+                    <div className="bg-gray-800/50 p-4 rounded-lg border border-cyan-500/20">
+                      <h3 className="text-lg font-semibold text-white mb-2">
                         相关结果 2
                       </h3>
-                      <p className="text-gray-300" data-oid="kvfq2gg">
+                      <p className="text-gray-300">
                         这是另一个模拟的搜索结果...
                       </p>
                     </div>
@@ -181,14 +139,11 @@ export default function BrowserView({ className }: BrowserViewProps) {
               );
             } else {
               renderedContent = (
-                <div className="text-center py-20" data-oid="jvv_p-1">
-                  <h1
-                    className="text-2xl font-bold text-red-400 mb-4"
-                    data-oid="cx-6:uc"
-                  >
+                <div className="text-center py-20">
+                  <h1 className="text-2xl font-bold text-red-400 mb-4">
                     页面未找到
                   </h1>
-                  <p className="text-gray-300" data-oid="xudwrvz">
+                  <p className="text-gray-300">
                     无法找到请求的页面：{currentUrl}
                   </p>
                 </div>
@@ -208,24 +163,15 @@ export default function BrowserView({ className }: BrowserViewProps) {
     return (
       <div
         className={clsx("flex items-center justify-center h-full", className)}
-        data-oid="b32y2.z"
       >
-        <div className="text-center" data-oid="o:pnvqk">
-          <div
-            className="w-12 h-12 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"
-            data-oid="tplhr1g"
-          />
-          <p className="text-gray-300" data-oid="an5niah">
-            正在加载...
-          </p>
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+
+          <p className="text-gray-300">正在加载...</p>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className={clsx("w-full h-full", className)} data-oid="e2o97c9">
-      {content}
-    </div>
-  );
+  return <div className={clsx("w-full h-full", className)}>{content}</div>;
 }

@@ -16,7 +16,10 @@ interface FullScreenBrowserProps {
   onClose: () => void;
 }
 
-export default function FullScreenBrowser({ url, onClose }: FullScreenBrowserProps) {
+export default function FullScreenBrowser({
+  url,
+  onClose,
+}: FullScreenBrowserProps) {
   const [currentUrl, setCurrentUrl] = useState(url);
   const [urlInput, setUrlInput] = useState(url);
   const [isLoading, setIsLoading] = useState(true);
@@ -51,12 +54,15 @@ export default function FullScreenBrowser({ url, onClose }: FullScreenBrowserPro
     e.preventDefault();
     if (urlInput.trim()) {
       let processedUrl = urlInput.trim();
-      
+
       // 如果不是完整URL，添加https://
-      if (!processedUrl.startsWith('http://') && !processedUrl.startsWith('https://')) {
+      if (
+        !processedUrl.startsWith("http://") &&
+        !processedUrl.startsWith("https://")
+      ) {
         processedUrl = `https://${processedUrl}`;
       }
-      
+
       handleNavigation(processedUrl);
     }
   };
@@ -177,7 +183,7 @@ export default function FullScreenBrowser({ url, onClose }: FullScreenBrowserPro
                   "w-full px-4 py-2 bg-gray-800 border border-gray-600",
                   "rounded-lg text-white placeholder-gray-400",
                   "focus:outline-none focus:border-cyan-500 transition-colors",
-                  !isUrlEditing && isValidUrl(currentUrl) && "pl-10"
+                  !isUrlEditing && isValidUrl(currentUrl) && "pl-10",
                 )}
                 placeholder="输入网址或搜索..."
               />
@@ -207,8 +213,12 @@ export default function FullScreenBrowser({ url, onClose }: FullScreenBrowserPro
             ) : (
               <div className="flex items-center justify-center h-full bg-gray-100">
                 <div className="text-center">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-4">无效的网址</h2>
-                  <p className="text-gray-600">请输入有效的网址，例如：https://www.example.com</p>
+                  <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                    无效的网址
+                  </h2>
+                  <p className="text-gray-600">
+                    请输入有效的网址，例如：https://www.example.com
+                  </p>
                 </div>
               </div>
             )}
@@ -217,4 +227,4 @@ export default function FullScreenBrowser({ url, onClose }: FullScreenBrowserPro
       </div>
     </div>
   );
-} 
+}

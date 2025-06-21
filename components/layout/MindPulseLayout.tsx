@@ -11,7 +11,8 @@ interface MindPulseLayoutProps {
 }
 
 export default function MindPulseLayout({ children }: MindPulseLayoutProps) {
-  const { sidebarCollapsed, isMobile, isFullScreenBrowserOpen, setIsMobile } = useUI();
+  const { sidebarCollapsed, isMobile, isFullScreenBrowserOpen, setIsMobile } =
+    useUI();
 
   // 检测屏幕尺寸
   useEffect(() => {
@@ -25,14 +26,11 @@ export default function MindPulseLayout({ children }: MindPulseLayoutProps) {
   }, [setIsMobile]);
 
   return (
-    <div
-      className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative"
-      data-oid="ezcrz3s"
-    >
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative">
       {/* 背景宇宙效果 */}
-      <div className="fixed inset-0 pointer-events-none" data-oid="cqn:0m8">
+      <div className="fixed inset-0 pointer-events-none">
         {/* 星空背景 */}
-        <div className="absolute inset-0" data-oid="5j.51gq">
+        <div className="absolute inset-0">
           {[...Array(50)].map((_, i) => (
             <div
               key={i}
@@ -45,22 +43,15 @@ export default function MindPulseLayout({ children }: MindPulseLayoutProps) {
                 animationDelay: `${Math.random() * 3}s`,
                 animation: `twinkle ${3 + Math.random() * 3}s infinite`,
               }}
-              data-oid="bfg.hy1"
             />
           ))}
         </div>
 
         {/* 能量波动 */}
-        <div
-          className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-transparent to-purple-500/5 animate-pulse"
-          data-oid="drg-er-"
-        />
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-transparent to-purple-500/5 animate-pulse" />
 
         {/* 数据流效果 */}
-        <div
-          className="absolute top-0 left-0 w-full h-full overflow-hidden"
-          data-oid="a28.8no"
-        >
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
           {[...Array(8)].map((_, i) => (
             <div
               key={i}
@@ -72,55 +63,47 @@ export default function MindPulseLayout({ children }: MindPulseLayoutProps) {
                 animation: `dataFlow ${10 + Math.random() * 5}s linear infinite`,
                 animationDelay: `${i * 2}s`,
               }}
-              data-oid="59a9_jq"
             />
           ))}
         </div>
       </div>
 
       {/* 侧边栏 - 固定在左侧 */}
-      <MindPulseSidebar data-oid="b5b.d8z" />
+      <MindPulseSidebar />
 
       {/* Header - 固定在顶部，sidebar右边 */}
-      <MindPulseHeader data-oid="rj695oc" />
+      <MindPulseHeader />
 
       {/* Main - 在Header下面，sidebar右边 - 全屏浏览器打开时隐藏 */}
       {!isFullScreenBrowserOpen && (
         <main
-        className={clsx(
-          // 使用固定定位确保准确位置
-          "fixed transition-all duration-300",
-          // 顶部留出Header空间 (Header大约120px高)
-          "top-[120px] bottom-0",
-          // 左侧留出Sidebar空间
-          sidebarCollapsed ? "left-16" : "left-64",
-          // 右侧到屏幕边缘
-          "right-0",
-          // 移动端时左侧不留空间
-          isMobile && "left-0",
-          // 适当的z-index，在Header和Sidebar下方，但在背景上方
-          "z-[9997]"
-        )}
-        data-oid="07jbtrv"
-      >
-        {/* 内容背景 */}
-        <div
-          className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-          data-oid="luidzl."
-        />
-
-        {/* 实际内容 - 可滚动区域 */}
-        <div 
-          className="relative z-10 h-full overflow-y-auto overflow-x-hidden"
-          data-oid="8gadq3x"
+          className={clsx(
+            // 使用固定定位确保准确位置
+            "fixed transition-all duration-300",
+            // 顶部留出Header空间 (Header大约120px高)
+            "top-[120px] bottom-0",
+            // 左侧留出Sidebar空间
+            sidebarCollapsed ? "left-16" : "left-64",
+            // 右侧到屏幕边缘
+            "right-0",
+            // 移动端时左侧不留空间
+            isMobile && "left-0",
+            // 适当的z-index，在Header和Sidebar下方，但在背景上方
+            "z-[9997]",
+          )}
         >
-          {children}
-        </div>
+          {/* 内容背景 */}
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
+
+          {/* 实际内容 - 可滚动区域 */}
+          <div className="relative z-10 h-full overflow-y-auto overflow-x-hidden">
+            {children}
+          </div>
         </main>
       )}
 
       {/* 自定义样式 */}
-      <style jsx data-oid="9ya-cmb">{`
+      <style jsx>{`
         @keyframes twinkle {
           0%,
           100% {
