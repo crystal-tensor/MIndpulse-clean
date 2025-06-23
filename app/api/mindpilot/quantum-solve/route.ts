@@ -197,6 +197,60 @@ class QuantumVQEEngine {
     this.riskPreference = riskPreference;
   }
   
+  // 创建变量映射：将多个变量映射到有限的qubit上
+  private createVariableMapping(variableCount: number, actualQubits: number): number[][] {
+    const mapping: number[][] = Array(actualQubits).fill(0).map(() => []);
+    
+    if (variableCount <= actualQubits) {
+      // 变量数量不超过qubit数量，一对一映射
+      for (let i = 0; i < variableCount; i++) {
+        mapping[i] = [i];
+      }
+    } else {
+      // 变量数量超过qubit数量，需要聚合映射
+      // 按变量类型分组，优先保证每种类型至少有一个qubit
+      const goals = this.variables.map((v, i) => ({ index: i, variable: v })).filter(item => item.variable.type === "目标");
+      const resources = this.variables.map((v, i) => ({ index: i, variable: v })).filter(item => item.variable.type === "资源");
+      const constraints = this.variables.map((v, i) => ({ index: i, variable: v })).filter(item => item.variable.type === "约束");
+      
+      let qubitIndex = 0;
+      
+      // 分配目标变量到qubit
+      if (goals.length > 0) {
+        const goalQubits = Math.max(1, Math.floor(actualQubits * 0.4)); // 40%给目标
+        const varsPerQubit = Math.ceil(goals.length / goalQubits);
+        for (let i = 0; i < goals.length; i++) {
+          const targetQubit = Math.min(qubitIndex + Math.floor(i / varsPerQubit), actualQubits - 1);
+          mapping[targetQubit].push(goals[i].index);
+        }
+        qubitIndex += goalQubits;
+      }
+      
+      // 分配资源变量到qubit
+      if (resources.length > 0 && qubitIndex < actualQubits) {
+        const resourceQubits = Math.max(1, Math.floor(actualQubits * 0.35)); // 35%给资源
+        const varsPerQubit = Math.ceil(resources.length / resourceQubits);
+        for (let i = 0; i < resources.length; i++) {
+          const targetQubit = Math.min(qubitIndex + Math.floor(i / varsPerQubit), actualQubits - 1);
+          mapping[targetQubit].push(resources[i].index);
+        }
+        qubitIndex += resourceQubits;
+      }
+      
+      // 分配约束变量到剩余qubit
+      if (constraints.length > 0 && qubitIndex < actualQubits) {
+        const constraintQubits = actualQubits - qubitIndex; // 剩余的给约束
+        const varsPerQubit = Math.ceil(constraints.length / constraintQubits);
+        for (let i = 0; i < constraints.length; i++) {
+          const targetQubit = Math.min(qubitIndex + Math.floor(i / varsPerQubit), actualQubits - 1);
+          mapping[targetQubit].push(constraints[i].index);
+        }
+      }
+    }
+    
+    return mapping;
+  }
+  
   // 生成三维帕累托前沿分布图数据
   private generateParetoFrontChart(paretoFront: Array<{
     risk: number;
@@ -248,37 +302,54 @@ class QuantumVQEEngine {
     };
   }
 
-  // 建模为QUBO问题
-  private modelAsQUBO(): number[][] {
-    const n = this.variables.length;
+  // 建模为QUBO问题 - 动态qubit分配
+  private modelAsQUBO(): { Q: number[][], actualQubits: number } {
+    const variableCount = this.variables.length;
+    // 动态计算qubit数量：变量数量 <= 11 时使用实际数量，> 11 时固定使用11
+    const actualQubits = Math.min(Math.max(variableCount, 1), 11);
+    
+    // 如果变量数量超过11个，需要进行变量映射和降维
+    const n = actualQubits;
     const Q = Array(n).fill(0).map(() => Array(n).fill(0));
+    
+    // 如果变量数量超过11个，需要进行变量聚合和权重合并
+    const variableMapping = this.createVariableMapping(variableCount, actualQubits);
     
     // 目标函数系数（最大化目标）
     for (let i = 0; i < n; i++) {
-      const variable = this.variables[i];
-      if (variable.type === "目标") {
-        Q[i][i] += variable.weight * variable.confidence;
-      } else if (variable.type === "资源") {
-        Q[i][i] += 0.8 * variable.weight * variable.confidence;
+      const mappedVariables = variableMapping[i];
+      for (const varIndex of mappedVariables) {
+        const variable = this.variables[varIndex];
+        if (variable.type === "目标") {
+          Q[i][i] += variable.weight * variable.confidence;
+        } else if (variable.type === "资源") {
+          Q[i][i] += 0.8 * variable.weight * variable.confidence;
+        }
       }
     }
     
     // 约束条件处理：在哈密顿量中使用加法添加惩罚项
     for (let i = 0; i < n; i++) {
-      const variable = this.variables[i];
-      if (variable.type === "约束") {
-        // 约束违反的惩罚项（加法形式）
-        const penalty = variable.weight * (1 - variable.confidence) * 2.0;
-        Q[i][i] += penalty; // 注意这里是加法，不是减法
-        
-        // 约束与其他变量的耦合项（约束越强，对其他变量的影响越大）
-        for (let j = 0; j < n; j++) {
-          if (i !== j) {
-            const otherVar = this.variables[j];
-            if (otherVar.type === "目标") {
-              // 约束对目标的限制效应
-              Q[i][j] += penalty * 0.5;
-              Q[j][i] += penalty * 0.5;
+      const mappedVariables = variableMapping[i];
+      for (const varIndex of mappedVariables) {
+        const variable = this.variables[varIndex];
+        if (variable.type === "约束") {
+          // 约束违反的惩罚项（加法形式）
+          const penalty = variable.weight * (1 - variable.confidence) * 2.0;
+          Q[i][i] += penalty; // 注意这里是加法，不是减法
+          
+          // 约束与其他变量的耦合项（约束越强，对其他变量的影响越大）
+          for (let j = 0; j < n; j++) {
+            if (i !== j) {
+              const otherMappedVars = variableMapping[j];
+              for (const otherVarIndex of otherMappedVars) {
+                const otherVar = this.variables[otherVarIndex];
+                if (otherVar.type === "目标") {
+                  // 约束对目标的限制效应
+                  Q[i][j] += penalty * 0.5;
+                  Q[j][i] += penalty * 0.5;
+                }
+              }
             }
           }
         }
@@ -288,25 +359,32 @@ class QuantumVQEEngine {
     // 添加变量间的协同效应
     for (let i = 0; i < n; i++) {
       for (let j = i + 1; j < n; j++) {
-        const var1 = this.variables[i];
-        const var2 = this.variables[j];
+        const mappedVars1 = variableMapping[i];
+        const mappedVars2 = variableMapping[j];
         
-        // 目标与资源的协同效应
-        if (var1.type === "目标" && var2.type === "资源") {
-          const synergy = 0.3 * this.riskPreference;
-          Q[i][j] += synergy;
-          Q[j][i] += synergy;
-        }
-        // 资源间的互补效应
-        else if (var1.type === "资源" && var2.type === "资源") {
-          const complement = 0.2 * (1 - this.riskPreference);
-          Q[i][j] += complement;
-          Q[j][i] += complement;
+        for (const varIndex1 of mappedVars1) {
+          for (const varIndex2 of mappedVars2) {
+            const var1 = this.variables[varIndex1];
+            const var2 = this.variables[varIndex2];
+            
+            // 目标与资源的协同效应
+            if (var1.type === "目标" && var2.type === "资源") {
+              const synergy = 0.3 * this.riskPreference;
+              Q[i][j] += synergy;
+              Q[j][i] += synergy;
+            }
+            // 资源间的互补效应
+            else if (var1.type === "资源" && var2.type === "资源") {
+              const complement = 0.2 * (1 - this.riskPreference);
+              Q[i][j] += complement;
+              Q[j][i] += complement;
+            }
+          }
         }
       }
     }
     
-    return Q;
+    return { Q, actualQubits };
   }
   
   // VQE求解器 (模拟量子计算)
@@ -410,8 +488,8 @@ class QuantumVQEEngine {
   
   // 主求解方法
   public async solve(llmSettings?: any): Promise<QuantumSolution[]> {
-    const Q = this.modelAsQUBO();
-    const vqeResult = this.solveVQE(Q);
+    const quboResult = this.modelAsQUBO();
+    const vqeResult = this.solveVQE(quboResult.Q);
     
     // 生成多个候选解
     const candidateSolutions = [];
@@ -448,12 +526,14 @@ class QuantumVQEEngine {
     const solutions: QuantumSolution[] = [];
     for (let index = 0; index < topSolutions.length; index++) {
       const sol = topSolutions[index];
+      // 统一使用reward作为成功概率，确保方案概率和关键指标成功概率一致
+      const successProbability = Math.round(sol.reward * 100);
       const baseSolution = {
         id: `solution_${index + 1}`,
-        probability: this.calculateProbability(sol.vector),
+        probability: successProbability / 100, // 转换为0-1之间的概率值，与关键指标保持一致
         strategy: this.generateStrategy(sol.vector, index),
         metrics: {
-          "成功概率": Math.round(sol.reward * 100),
+          "成功概率": successProbability,
           "风险系数": Math.round(sol.risk * 100),
           "可行性": Math.round(sol.feasibility * 100),
           "综合得分": Math.round((sol.reward - sol.risk * this.riskPreference) * 100)
@@ -462,7 +542,7 @@ class QuantumVQEEngine {
         quantumMetrics: {
           eigenvalue: vqeResult.eigenvalue,
           convergenceIterations: vqeResult.iterations,
-          quantumVolume: this.variables.length * 1024, // 模拟量子体积
+          quantumVolume: quboResult.actualQubits * 1024, // 使用实际qubit数量计算量子体积
           paretoFront,
           paretoFrontChart // 添加图表数据
         }

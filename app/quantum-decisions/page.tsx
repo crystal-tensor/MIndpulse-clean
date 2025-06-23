@@ -171,11 +171,15 @@ export default function QuantumDecisions() {
     }
   }, [chatMessages]);
 
-  // 检测变量权重变化
+  // 检测变量权重变化并动态更新qubit数量
   useEffect(() => {
     const currentHash = JSON.stringify(
       variables.map((v) => ({ id: v.id, weight: v.weight })),
     );
+    
+    // 动态计算qubit数量：变量数量 <= 11 时使用实际数量，> 11 时固定使用11
+    const dynamicQubits = Math.min(Math.max(variables.length, 1), 11);
+    
     if (
       variablesHash &&
       variablesHash !== currentHash &&
@@ -187,9 +191,17 @@ export default function QuantumDecisions() {
         status: "idle",
         currentIteration: 0,
         energy: [],
+        qubits: dynamicQubits, // 更新qubit数量
       }));
       setSolutions([]); // 清除旧的解决方案
+    } else {
+      // 仅更新qubit数量，不重置其他状态
+      setQuantumProgress((prev) => ({
+        ...prev,
+        qubits: dynamicQubits,
+      }));
     }
+    
     setVariablesHash(currentHash);
   }, [variables, variablesHash, quantumProgress.status]);
 
@@ -225,15 +237,21 @@ export default function QuantumDecisions() {
     const resourceCount = variables.filter((v) => v.type === "资源").length;
     const constraintCount = variables.filter((v) => v.type === "约束").length;
 
-    const totalExpected = Math.max(
-      1,
-      goalCount + resourceCount + constraintCount,
-    );
-    const phaseProgress =
-      currentPhase === 4 ? 100 : Math.min(95, (totalExpected / 6) * 100);
+    // 如果没有开始提取或没有变量，完整度为0
+    if (!hasStartedExtraction || variables.length === 0) {
+      setCompletionProgress(0);
+      return;
+    }
 
-    setCompletionProgress(phaseProgress);
-  }, [variables, currentPhase]);
+    const totalVariables = goalCount + resourceCount + constraintCount;
+    const expectedMinimum = 3; // 期望至少有3个变量（目标、资源、约束各1个）
+    
+    const phaseProgress = currentPhase === 4 
+      ? 100 
+      : Math.min(95, (totalVariables / expectedMinimum) * 30 + (currentPhase - 1) * 25);
+
+    setCompletionProgress(Math.max(0, phaseProgress));
+  }, [variables, currentPhase, hasStartedExtraction]);
 
   const handleSendMessage = async () => {
     if (!currentInput.trim()) return;
@@ -381,10 +399,7 @@ export default function QuantumDecisions() {
             const confirmMessage: ChatMessage = {
               id: `confirm_${Date.now()}`,
               role: "system",
-              content:
-                currentPhase < 4
-                  ? "这个阶段的信息是否完整？可以进入下一步了吗？"
-                  : "以上信息确认无误，可以开始量子计算了吗？",
+              content: getConfirmMessage(currentPhase),
               timestamp: new Date(),
               showConfirmButtons: true,
             };
@@ -518,6 +533,36 @@ export default function QuantumDecisions() {
         return "说明约束条件...";
       default:
         return "继续对话...";
+    }
+  };
+
+  const getConfirmButtonText = (phase: number) => {
+    switch (phase) {
+      case 1:
+        return "确认目标";
+      case 2:
+        return "确认资源";
+      case 3:
+        return "确认约束";
+      case 4:
+        return "开始量子计算";
+      default:
+        return "确认继续";
+    }
+  };
+
+  const getConfirmMessage = (phase: number) => {
+    switch (phase) {
+      case 1:
+        return "目标信息是否完整？可以进入资源盘点了吗？";
+      case 2:
+        return "资源信息是否完整？可以进入约束识别了吗？";
+      case 3:
+        return "约束信息是否完整？可以进入摘要确认了吗？";
+      case 4:
+        return "以上信息确认无误，可以开始量子计算了吗？";
+      default:
+        return "这个阶段的信息是否完整？可以进入下一步了吗？";
     }
   };
 
@@ -983,7 +1028,7 @@ export default function QuantumDecisions() {
                                 onClick={() => handlePhaseConfirm(true)}
                                 className="px-4 py-2 bg-green-500/20 hover:bg-green-500/30 border border-green-500/50 rounded-lg text-sm text-green-400 transition-colors"
                               >
-                                {currentPhase < 4 ? "确认继续" : "开始量子计算"}
+                                {getConfirmButtonText(currentPhase)}
                               </button>
                               <button
                                 onClick={() => handlePhaseConfirm(false)}
@@ -1252,13 +1297,28 @@ export default function QuantumDecisions() {
                 </div>
                 <div>
                   <h4 className="font-medium text-purple-400 mb-3">
-                    预估计算资源
+                    动态量子资源分配
                   </h4>
                   <div className="text-sm space-y-1">
+                    <div className="flex justify-between">
+                      <span>变量总数:</span>
+                      <span className="text-white">
+                        {variables.length}
+                      </span>
+                    </div>
                     <div className="flex justify-between">
                       <span>量子比特数:</span>
                       <span className="text-cyan-400">
                         {quantumProgress.qubits}
+                        {variables.length > 11 && (
+                          <span className="text-yellow-400 ml-1">(限制)</span>
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>映射策略:</span>
+                      <span className="text-green-400">
+                        {variables.length <= 11 ? "一对一" : "聚合映射"}
                       </span>
                     </div>
                     <div className="flex justify-between">
@@ -1274,6 +1334,20 @@ export default function QuantumDecisions() {
                       </span>
                     </div>
                   </div>
+                  
+                  {variables.length > 11 && (
+                    <div className="mt-3 p-2 bg-yellow-500/10 border border-yellow-500/30 rounded text-xs">
+                      <div className="flex items-start space-x-2">
+                        <ExclamationTriangleIcon className="w-4 h-4 text-yellow-400 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <div className="text-yellow-400 font-medium">智能聚合</div>
+                          <div className="text-gray-300">
+                            变量数超过11个，系统将使用智能聚合算法将相似变量映射到同一qubit，确保计算效率。
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1327,9 +1401,18 @@ export default function QuantumDecisions() {
                     <h3 className="font-medium text-cyan-400 mb-3">运行参数</h3>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
+                        <span className="text-gray-400">变量数:</span>
+                        <span className="ml-2 text-white">
+                          {variables.length}
+                        </span>
+                      </div>
+                      <div>
                         <span className="text-gray-400">量子比特:</span>
                         <span className="ml-2 text-white">
                           {quantumProgress.qubits}
+                          {variables.length > 11 && (
+                            <span className="text-yellow-400 text-xs ml-1">(聚合)</span>
+                          )}
                         </span>
                       </div>
                       <div>
@@ -1349,6 +1432,12 @@ export default function QuantumDecisions() {
                         <span className="text-gray-400">后端:</span>
                         <span className="ml-2 text-white text-xs">
                           {quantumProgress.backend}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-400">映射策略:</span>
+                        <span className="ml-2 text-green-400 text-xs">
+                          {variables.length <= 11 ? "直接映射" : "智能聚合"}
                         </span>
                       </div>
                     </div>

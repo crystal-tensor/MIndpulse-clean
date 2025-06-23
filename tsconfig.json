@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "es6"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "es6"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -20,14 +24,30 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
-      "@/components/*": ["./components/*"],
-      "@/lib/*": ["./lib/*"],
-      "@/app/*": ["./app/*"],
-      "@/public/*": ["./public/*"],
-      "@/styles/*": ["./styles/*"],
-      "@/types/*": ["./types/*"],
-      "@/services/*": ["./services/*"]
+      "@/*": [
+        "./*"
+      ],
+      "@/components/*": [
+        "./components/*"
+      ],
+      "@/lib/*": [
+        "./lib/*"
+      ],
+      "@/app/*": [
+        "./app/*"
+      ],
+      "@/public/*": [
+        "./public/*"
+      ],
+      "@/styles/*": [
+        "./styles/*"
+      ],
+      "@/types/*": [
+        "./types/*"
+      ],
+      "@/services/*": [
+        "./services/*"
+      ]
     },
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true
@@ -36,7 +56,11 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    ".next-prod/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "PVE"]
-} 
+  "exclude": [
+    "node_modules",
+    "PVE"
+  ]
+}

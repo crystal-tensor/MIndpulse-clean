@@ -12,9 +12,12 @@ export async function POST(request: NextRequest) {
     const body: TestConnectionRequest = await request.json();
     const { provider, model, apiKey, baseUrl } = body;
 
+    console.log('Test connection request:', { provider, model: model?.substring(0, 10) + '...', hasApiKey: !!apiKey, baseUrl });
+
     if (!provider || !model || !apiKey) {
+      console.log('Missing parameters:', { provider: !!provider, model: !!model, apiKey: !!apiKey });
       return NextResponse.json(
-        { error: '缺少必要参数' },
+        { error: '缺少必要参数', details: { provider: !!provider, model: !!model, apiKey: !!apiKey } },
         { status: 400 }
       );
     }
@@ -97,7 +100,11 @@ async function testOpenAI(apiKey: string, model: string, baseUrl?: string): Prom
 }
 
 async function testDeepSeek(apiKey: string, model: string, baseUrl?: string): Promise<any> {
-  const url = baseUrl || 'https://api.deepseek.com/v1/chat/completions';
+  // 如果用户设置了错误的baseUrl，自动修正
+  let url = baseUrl || 'https://api.deepseek.com/chat/completions';
+  if (baseUrl && baseUrl.includes('deepseek.com') && !baseUrl.includes('/chat/completions')) {
+    url = baseUrl.replace(/\/v1$/, '') + '/chat/completions';
+  }
   
   const response = await fetch(url, {
     method: 'POST',
