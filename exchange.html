@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奇点交易所 - MindPulse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/heroicons@2.1.3/24/outline/index.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'gray-900': '#111827',
+                        'gray-800': '#1F2937',
+                        'cyan-500': '#06B6D4',
+                        'purple-500': '#8B5CF6',
+                    },
+                    animation: {
+                        pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        twinkle: 'twinkle 4s infinite',
+                        dataFlow: 'dataFlow 15s linear infinite',
+                    },
+                    keyframes: {
+                        twinkle: {
+                            '0%, 100%': { opacity: 0.3, transform: 'scale(1)' },
+                            '50%': { opacity: 1, transform: 'scale(1.2)' },
+                        },
+                        dataFlow: {
+                            '0%': { transform: 'translateX(-200px)', opacity: 0 },
+                            '10%': { opacity: 1 },
+                            '90%': { opacity: 1 },
+                            '100%': { transform: 'translateX(calc(100vw + 200px))', opacity: 0 },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #111827;
+            color: #E5E7EB;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .icon { width: 1.5rem; height: 1.5rem; }
+        .icon-sm { width: 1.25rem; height: 1.25rem; }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div class="relative min-h-screen flex">
+        <!-- Background Effects -->
+        <div class="fixed inset-0 pointer-events-none">
+            <div class="absolute inset-0">
+                {[...Array(50)].map((_, i) => (
+                    <div
+                        key={i}
+                        class="absolute bg-white rounded-full opacity-60"
+                        style={{
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            width: `${Math.random() * 2 + 1}px`,
+                            height: `${Math.random() * 2 + 1}px`,
+                            animation: `twinkle ${3 + Math.random() * 3}s infinite`,
+                            animationDelay: `${Math.random() * 3}s`,
+                        }}
+                    />
+                ))}
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-transparent to-purple-500/5 animate-pulse" />
+        </div>
+
+        <!-- Mock Sidebar -->
+        <aside class="w-64 bg-gray-900/50 backdrop-blur-lg p-4 flex-shrink-0 z-20">
+            <div class="flex items-center mb-8">
+                <svg class="w-10 h-10 text-cyan-400" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path></svg>
+                <h1 class="text-2xl font-bold ml-2">MindPulse</h1>
+            </div>
+            <nav class="space-y-2">
+                <a href="#" class="flex items-center p-2 text-gray-400 hover:bg-gray-700 rounded-md"><i class="icon-sm" data-hero-icon="home"></i><span class="ml-3">主页</span></a>
+                <a href="#" class="flex items-center p-2 text-white bg-cyan-500/20 rounded-md"><i class="icon-sm" data-hero-icon="arrow-trending-up"></i><span class="ml-3">奇点交易所</span></a>
+                <a href="#" class="flex items-center p-2 text-gray-400 hover:bg-gray-700 rounded-md"><i class="icon-sm" data-hero-icon="chart-pie"></i><span class="ml-3">资产配置</span></a>
+                <a href="#" class="flex items-center p-2 text-gray-400 hover:bg-gray-700 rounded-md"><i class="icon-sm" data-hero-icon="user-group"></i><span class="ml-3">知识图谱</span></a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col z-10">
+            <!-- Mock Header -->
+            <header class="h-20 bg-gray-900/30 backdrop-blur-md flex items-center justify-between px-8">
+                <h2 class="text-2xl font-semibold">奇点交易所</h2>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm">Wallet Connected: 0x1234...abcd</span>
+                    <div class="w-10 h-10 bg-purple-500 rounded-full"></div>
+                </div>
+            </header>
+
+            <!-- Exchange Interface -->
+            <main class="flex-1 p-4 lg:p-8 grid grid-cols-12 gap-4 lg:gap-8">
+                
+                <!-- Left Panel -->
+                <div class="col-span-12 lg:col-span-3 space-y-4 lg:space-y-8">
+                    <!-- Market Panel -->
+                    <div class="bg-gray-900/50 backdrop-blur-sm rounded-lg p-4 h-1/2 flex flex-col">
+                        <h3 class="text-lg font-bold mb-4 border-b border-gray-700 pb-2">市场行情</h3>
+                        <div class="flex-1 overflow-y-auto">
+                            <div class="space-y-3">
+                                <!-- Hot Agents -->
+                                <div class="p-3 rounded-md bg-gray-800/50 hover:bg-gray-700/70 cursor-pointer">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-semibold">图像生成Pro</span>
+                                        <span class="text-green-400">+5.2%</span>
+                                    </div>
+                                    <div class="text-sm text-gray-400">$1,200.50</div>
+                                </div>
+                                <div class="p-3 rounded-md bg-gray-800/50 hover:bg-gray-700/70 cursor-pointer">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-semibold">文本分析Bot</span>
+                                        <span class="text-red-400">-1.8%</span>
+                                    </div>
+                                    <div class="text-sm text-gray-400">$850.00</div>
+                                </div>
+                                <div class="p-3 rounded-md bg-gray-800/50 hover:bg-gray-700/70 cursor-pointer">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-semibold">策略交易Agent</span>
+                                        <span class="text-green-400">+12.1%</span>
+                                    </div>
+                                    <div class="text-sm text-gray-400">$5,300.75</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- My Assets Panel -->
+                    <div class="bg-gray-900/50 backdrop-blur-sm rounded-lg p-4 h-1/2 flex flex-col">
+                        <h3 class="text-lg font-bold mb-4 border-b border-gray-700 pb-2">我的资产</h3>
+                        <div class="flex-1 overflow-y-auto">
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center p-2 rounded-md bg-gray-800/50">
+                                    <span>USDC</span>
+                                    <span>10,000.00</span>
+                                </div>
+                                <div class="flex justify-between items-center p-2 rounded-md bg-gray-800/50">
+                                    <span>图像生成Pro</span>
+                                    <span>2 units</span>
+                                </div>
+                                <div class="flex justify-between items-center p-2 rounded-md bg-gray-800/50">
+                                    <span>代码助手 v2</span>
+                                    <span>1 unit</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Center Panel -->
+                <div class="col-span-12 lg:col-span-6 bg-gray-900/50 backdrop-blur-sm rounded-lg p-4 flex flex-col">
+                    <div class="flex items-center justify-between border-b border-gray-700 pb-2 mb-4">
+                        <h3 class="text-xl font-bold">图像生成Pro / USDC</h3>
+                        <div class="text-green-400 text-lg">$1,200.50</div>
+                    </div>
+                    <!-- Mock Chart -->
+                    <div class="flex-1 flex items-center justify-center">
+                        <div class="w-full h-full bg-gray-800/50 rounded-md flex items-center justify-center text-gray-500">
+                           (K线图区域)
+                        </div>
+                    </div>
+                    <div class="mt-4 border-t border-gray-700 pt-4">
+                        <h4 class="font-semibold mb-2">订单簿</h4>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <div class="flex justify-between text-gray-400 mb-1"><span>价格(USDC)</span><span>数量</span></div>
+                                <div class="flex justify-between text-red-400"><span>1201.00</span><span>15</span></div>
+                                <div class="flex justify-between text-red-400"><span>1200.80</span><span>20</span></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-gray-400 mb-1"><span>价格(USDC)</span><span>数量</span></div>
+                                <div class="flex justify-between text-green-400"><span>1200.50</span><span>10</span></div>
+                                <div class="flex justify-between text-green-400"><span>1200.30</span><span>18</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel -->
+                <div class="col-span-12 lg:col-span-3 bg-gray-900/50 backdrop-blur-sm rounded-lg p-4">
+                    <h3 class="text-lg font-bold mb-4">交易</h3>
+                    <div class="flex space-x-2 mb-4 border-b border-gray-700">
+                        <button class="flex-1 pb-2 border-b-2 border-cyan-400 text-cyan-400">买入</button>
+                        <button class="flex-1 pb-2 border-b-2 border-transparent text-gray-500">卖出</button>
+                        <button class="flex-1 pb-2 border-b-2 border-transparent text-gray-500">租赁</button>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-sm text-gray-400">价格</label>
+                            <input type="text" value="1200.50" class="w-full bg-gray-800 border border-gray-700 rounded-md p-2 mt-1">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-400">数量</label>
+                            <input type="text" placeholder="0.00" class="w-full bg-gray-800 border border-gray-700 rounded-md p-2 mt-1">
+                        </div>
+                        <div class="text-sm text-gray-500">总计: 0.00 USDC</div>
+                        <button class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 rounded-md transition-colors">
+                            买入 图像生成Pro
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>
+        // Simple script to load heroicons
+        document.addEventListener('DOMContentLoaded', () => {
+            heroicons.outline.map(icon => {
+                const elements = document.querySelectorAll(`[data-hero-icon='${icon.name}']`);
+                elements.forEach(el => {
+                    el.innerHTML = icon.source;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

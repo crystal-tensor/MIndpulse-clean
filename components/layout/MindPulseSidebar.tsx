@@ -16,11 +16,30 @@ import {
   BookOpenIcon,
   ChatBubbleLeftRightIcon,
   BoltIcon,
+  ChartBarIcon,
 } from "@heroicons/react/24/outline";
 import { useUI } from "@/lib/store";
 import { clsx } from "clsx";
 
-const navigationItems = [
+interface NavigationItem {
+  id: string;
+  name: string;
+  nameEn: string;
+  path: string;
+  icon: any;
+  mysticSymbol: string;
+  energyColor: string;
+  description: string;
+  chineseElement: string;
+  subItems?: Array<{
+    id: string;
+    name: string;
+    path: string;
+    description: string;
+  }>;
+}
+
+const navigationItems: NavigationItem[] = [
   {
     id: "consciousness-hub",
     name: "意识枢纽",
@@ -36,12 +55,32 @@ const navigationItems = [
     id: "spirit-corridor",
     name: "灵境回廊",
     nameEn: "Spirit Corridor",
-    path: "/knowledge-graph",
+    path: "/spirit-corridor",
     icon: GlobeAltIcon,
     mysticSymbol: "🌌",
     energyColor: "from-purple-400 to-pink-500",
-    description: "知识图谱社交中心",
+    description: "数字分身与知识共鸣",
     chineseElement: "八卦",
+    subItems: [
+      {
+        id: "spirit-corridor-v4",
+        name: "V4 - 智能融合",
+        path: "/spirit-corridor-v4",
+        description: "全新版本：3D知识图谱+定制数字分身+多版本融合"
+      },
+      {
+        id: "spirit-corridor-v3",
+        name: "V3 - 智核驱动",
+        path: "/spirit-corridor",
+        description: "最新版本：知识图谱+数字分身+奇点交易所"
+      },
+      {
+        id: "spirit-corridor-v2",
+        name: "V2 - 经典版本",
+        path: "/spirit-corridor-v2",
+        description: "经典版本：36军官+量子计算+价值评估"
+      }
+    ]
   },
   {
     id: "ai-core",
@@ -56,7 +95,7 @@ const navigationItems = [
   },
   {
     id: "destiny-weaver",
-    name: "命运织机",
+    name: "智能决策",
     nameEn: "Destiny Weaver",
     path: "/quantum-decisions",
     icon: SparklesIcon,
@@ -64,17 +103,6 @@ const navigationItems = [
     energyColor: "from-yellow-400 to-orange-500",
     description: "量子智能决策系统",
     chineseElement: "奇门",
-  },
-  {
-    id: "singularity-exchange",
-    name: "奇点交易所",
-    nameEn: "Singularity Exchange",
-    path: "/marketplace",
-    icon: ArrowsRightLeftIcon,
-    mysticSymbol: "💎",
-    energyColor: "from-red-400 to-rose-500",
-    description: "价值创造与交易平台",
-    chineseElement: "五行",
   },
   {
     id: "self-entity",
@@ -86,6 +114,28 @@ const navigationItems = [
     energyColor: "from-indigo-400 to-purple-500",
     description: "个人中心与成长档案",
     chineseElement: "元神",
+  },
+  {
+    id: "asset-allocation",
+    name: "资产配置",
+    nameEn: "Asset Allocation",
+    path: "/asset-allocation",
+    icon: ChartBarIcon,
+    mysticSymbol: "📊",
+    energyColor: "from-emerald-400 to-teal-500",
+    description: "量子智能资产配置优化",
+    chineseElement: "财富",
+  },
+  {
+    id: "singularity-exchange",
+    name: "奇点交易所",
+    nameEn: "Singularity Exchange",
+    path: "/singularity-exchange",
+    icon: ArrowsRightLeftIcon,
+    mysticSymbol: "💎",
+    energyColor: "from-red-400 to-rose-500",
+    description: "价值创造与交易平台",
+    chineseElement: "五行",
   },
 ];
 
@@ -287,7 +337,8 @@ export default function MindPulseSidebar() {
           {navigationItems.map((item, index) => {
             const isActive =
               pathname === item.path ||
-              (item.path !== "/" && pathname.startsWith(item.path));
+              (item.path !== "/" && pathname.startsWith(item.path)) ||
+              (item.subItems && item.subItems.some(subItem => pathname === subItem.path));
 
             return (
               <div key={item.id} className="relative group">
@@ -385,10 +436,48 @@ export default function MindPulseSidebar() {
                       <div className="text-xs text-gray-400 mt-1">
                         {item.description}
                       </div>
+                      {/* 子菜单在折叠状态下的显示 */}
+                      {item.subItems && (
+                        <div className="mt-2 space-y-1">
+                          {item.subItems.map(subItem => (
+                            <Link
+                              key={subItem.id}
+                              href={subItem.path}
+                              className="block text-xs text-cyan-300 hover:text-white transition-colors"
+                            >
+                              {subItem.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
                       <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-900 border-l border-t border-cyan-500/30 rotate-45" />
                     </div>
                   )}
                 </Link>
+
+                {/* 子菜单 */}
+                {!sidebarCollapsed && item.subItems && isActive && (
+                  <div className="ml-8 mt-2 space-y-1">
+                    {item.subItems.map(subItem => {
+                      const isSubActive = pathname === subItem.path;
+                      return (
+                        <Link
+                          key={subItem.id}
+                          href={subItem.path}
+                          className={clsx(
+                            "block px-3 py-2 rounded-lg text-sm transition-all duration-300",
+                            isSubActive
+                              ? "bg-purple-500/20 text-purple-300 border-l-2 border-purple-400"
+                              : "text-gray-400 hover:text-white hover:bg-gray-800/50"
+                          )}
+                        >
+                          <div className="font-medium">{subItem.name}</div>
+                          <div className="text-xs opacity-70 mt-0.5">{subItem.description}</div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
 
                 {/* 路径连接线动画 */}
                 {isActive && index < navigationItems.length - 1 && (

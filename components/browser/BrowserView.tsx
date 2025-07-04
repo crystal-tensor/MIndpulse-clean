@@ -53,7 +53,6 @@ export default function BrowserView({ className }: BrowserViewProps) {
       } else {
         // MindPulse内部页面 - 支持两种格式：mindpulse://和常规路径
         switch (urlToRender) {
-          case "/":
           case "mindpulse://consciousness-hub":
             console.log("匹配到意识枢纽路由");
             renderedContent = <ConsciousnessHub />;
@@ -79,7 +78,7 @@ export default function BrowserView({ className }: BrowserViewProps) {
             renderedContent = (
               <div className="text-center py-20">
                 <h1 className="text-4xl font-bold text-green-400 mb-4">
-                  命运织机
+                  智能决策
                 </h1>
                 <p className="text-gray-300">量子决策系统正在开发中...</p>
               </div>

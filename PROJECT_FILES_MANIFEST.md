@@ -14,7 +14,7 @@ app/
 ├── ai-exploration/page.tsx           # AI探索V1页面
 ├── ai-exploration-v2/page.tsx        # AI探索V2页面（升级版）
 ├── knowledge-graph/page.tsx          # 知识图谱页面
-├── quantum-decisions/page.tsx        # 量子决策页面（命运织机）
+├── quantum-decisions/page.tsx        # 量子决策页面（智能决策）
 ├── layout.tsx                        # 全局布局
 ├── page.tsx                          # 首页
 └── globals.css                       # 全局样式

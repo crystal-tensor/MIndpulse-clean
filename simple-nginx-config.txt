@@ -1,0 +1,22 @@
+# 简化的MindPulse API Nginx配置
+# 将以下配置添加到你的虚拟主机Nginx设置中
+
+location /api/health {
+    try_files $uri /api/api/health.php;
+}
+
+location /api/chat {
+    try_files $uri /api/api/chat.php;
+}
+
+location /api/test-connection {
+    try_files $uri /api/api/test-connection.php;
+}
+
+location /api/extract-variables {
+    try_files $uri /api/api/extract-variables.php;
+}
+
+location /api/ {
+    try_files $uri $uri/ /api/api/index.php;
+} 

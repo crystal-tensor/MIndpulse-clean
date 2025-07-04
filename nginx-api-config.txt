@@ -1,0 +1,50 @@
+# MindPulse PHP API Nginx配置
+# 请将以下配置添加到你的虚拟主机Nginx设置中
+
+# API路由配置
+location /api/ {
+    # 处理CORS预检请求
+    if ($request_method = 'OPTIONS') {
+        add_header 'Access-Control-Allow-Origin' '*';
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+        add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization';
+        return 204;
+    }
+    
+    # 尝试直接访问文件，如果不存在则转发到API入口
+    try_files $uri $uri/ /api/api/index.php?$query_string;
+}
+
+# 健康检查端点
+location /api/health {
+    try_files $uri /api/api/health.php;
+}
+
+# 聊天端点
+location /api/chat {
+    try_files $uri /api/api/chat.php;
+}
+
+# 连接测试端点
+location /api/test-connection {
+    try_files $uri /api/api/test-connection.php;
+}
+
+# 变量提取端点
+location /api/extract-variables {
+    try_files $uri /api/api/extract-variables.php;
+}
+
+# PHP文件处理
+location ~ \.php$ {
+    try_files $uri =404;
+    fastcgi_pass unix:/var/run/php/php-fpm.sock;
+    fastcgi_index index.php;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    include fastcgi_params;
+}
+
+# 隐藏敏感文件
+location ~ /\.(htaccess|htpasswd|ini|log|sh|sql) {
+    deny all;
+} 

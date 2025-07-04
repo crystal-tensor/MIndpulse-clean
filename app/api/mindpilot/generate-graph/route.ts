@@ -12,66 +12,180 @@ async function getHistoricalMessages(userId: string, startDate: Date) {
   return [];
 }
 
+// 知识图谱节点接口
+interface KnowledgeNode {
+  id: string;
+  name: string;
+  category: string;
+  connections: string[];
+  level: number;
+  x: number;
+  y: number;
+  z: number;
+  color: string;
+  sourceConversation: string;
+  extractedTime: Date;
+  confidence: number;
+  size: number;
+}
+
+// 图谱生成配置
+interface GraphGenerationRequest {
+  startDate?: string;
+  endDate?: string;
+  mode: '2d' | '3d';
+  name: string;
+  saveLocation: 'cloud' | 'local';
+  localPath?: string;
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { messages, graph_type = "2d", user_id, time_range } = body;
+    const body: GraphGenerationRequest = await request.json();
+    const { startDate, endDate, mode, name, saveLocation, localPath } = body;
 
-    // 获取所有历史对话数据（默认过去6个月）
-    let allMessages = messages || [];
-    
-    // 如果没有指定时间范围，默认使用过去6个月
-    const sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-    
-    // 模拟从数据库获取历史对话（实际应用中需要从数据库查询）
-    try {
-      // 这里应该从数据库获取用户的所有对话
-      // 为了防止图谱过大，限制在过去6个月内
-      const historicalMessages = await getHistoricalMessages(user_id, sixMonthsAgo);
-      allMessages = [...allMessages, ...historicalMessages];
-    } catch (error) {
-      console.log("获取历史对话失败，使用当前对话:", error);
-    }
-
-    if (!allMessages || allMessages.length === 0) {
+    // 验证必需字段
+    if (!name.trim()) {
       return NextResponse.json(
-        { error: "缺少对话消息" },
+        { success: false, error: '图谱名称不能为空' },
         { status: 400 }
       );
     }
 
-    // 提取对话内容
-    const conversationText = allMessages
-      .map((msg: any) => msg.content)
-      .join(" ");
+    // 模拟从智核对话中提取知识节点
+    const mockConversations = [
+      {
+        id: 'conv-001',
+        content: '讨论量子计算在金融决策中的应用',
+        date: new Date('2024-01-15'),
+        extractedConcepts: ['量子计算', '金融决策', '优化算法']
+      },
+      {
+        id: 'conv-002',
+        content: '分析人工智能在资产配置中的角色',
+        date: new Date('2024-01-20'),
+        extractedConcepts: ['人工智能', '资产配置', '风险管理']
+      },
+      {
+        id: 'conv-003',
+        content: '探讨数字分身的意识模拟技术',
+        date: new Date('2024-01-25'),
+        extractedConcepts: ['数字分身', '意识模拟', '神经网络']
+      },
+    ];
 
-    // 生成知识图谱数据
-    const graphResult = await generateKnowledgeGraph(conversationText, graph_type, time_range);
+    // 根据时间范围过滤对话
+    let filteredConversations = mockConversations;
+    if (startDate) {
+      const start = new Date(startDate);
+      filteredConversations = filteredConversations.filter(conv => conv.date >= start);
+    }
+    if (endDate) {
+      const end = new Date(endDate);
+      filteredConversations = filteredConversations.filter(conv => conv.date <= end);
+    }
 
-    // 保存图谱数据
-    const graphEntry = {
-      id: `graph_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
-      user_id,
-      graph_type,
-      data: graphResult,
-      created_at: new Date().toISOString(),
-      messages_count: allMessages.length,
-      time_range: time_range || { start: sixMonthsAgo.toISOString(), end: new Date().toISOString() },
+    // 生成知识节点
+    const nodes: KnowledgeNode[] = [];
+    const categories = ['quantum', 'ai', 'finance', 'consciousness', 'technology'];
+    const colors = ['#8B5CF6', '#10B981', '#F59E0B', '#EF4444', '#3B82F6'];
+
+    let nodeId = 1;
+    filteredConversations.forEach((conv, convIndex) => {
+      conv.extractedConcepts.forEach((concept, conceptIndex) => {
+        const category = categories[conceptIndex % categories.length];
+        const color = colors[conceptIndex % colors.length];
+        
+        // 为3D模式添加z坐标
+        const node: KnowledgeNode = {
+          id: nodeId.toString(),
+          name: concept,
+          category,
+          connections: [], // 稍后建立连接
+          level: Math.floor(Math.random() * 5) + 1,
+          x: 100 + (nodeId * 80) % 600,
+          y: 100 + (nodeId * 60) % 400,
+          z: mode === '3d' ? 50 + (nodeId * 30) % 200 : 0,
+          color,
+          sourceConversation: conv.id,
+          extractedTime: conv.date,
+          confidence: 0.8 + Math.random() * 0.2,
+          size: 6 + Math.floor(Math.random() * 8),
+        };
+        
+        nodes.push(node);
+        nodeId++;
+      });
+    });
+
+    // 建立节点间的连接（基于共现和语义相似性）
+    nodes.forEach((node, index) => {
+      // 与同一对话中的其他节点建立连接
+      const sameConvNodes = nodes.filter(n => 
+        n.sourceConversation === node.sourceConversation && n.id !== node.id
+      );
+      sameConvNodes.forEach(connNode => {
+        if (!node.connections.includes(connNode.id)) {
+          node.connections.push(connNode.id);
+        }
+      });
+
+      // 与相似类别的节点建立弱连接
+      if (Math.random() > 0.7) {
+        const similarNodes = nodes.filter(n => 
+          n.category === node.category && n.id !== node.id && !node.connections.includes(n.id)
+        );
+        if (similarNodes.length > 0) {
+          const randomSimilar = similarNodes[Math.floor(Math.random() * similarNodes.length)];
+          node.connections.push(randomSimilar.id);
+        }
+      }
+    });
+
+    // 图谱元数据
+    const graphMetadata = {
+      id: Date.now().toString(),
+      name,
+      mode,
+      nodeCount: nodes.length,
+      connectionCount: nodes.reduce((sum, node) => sum + node.connections.length, 0),
+      timeRange: {
+        start: startDate || filteredConversations[0]?.date,
+        end: endDate || filteredConversations[filteredConversations.length - 1]?.date,
+      },
+      saveLocation,
+      localPath: saveLocation === 'local' ? localPath : undefined,
+      createdAt: new Date(),
+      generatedFrom: filteredConversations.length,
     };
 
-    graphData.push(graphEntry);
+    // 模拟保存过程
+    if (saveLocation === 'cloud') {
+      // 云端保存逻辑
+      console.log(`图谱 "${name}" 已保存到云端`);
+    } else if (saveLocation === 'local' && localPath) {
+      // 本地保存逻辑
+      console.log(`图谱 "${name}" 已保存到本地路径: ${localPath}`);
+    }
 
     return NextResponse.json({
       success: true,
-      graph_url: graphResult.graph_url,
-      graph_data: graphResult,
-      messages_processed: allMessages.length,
+      data: {
+        graph: {
+          metadata: graphMetadata,
+          nodes,
+        },
+        message: `成功生成${mode.toUpperCase()}知识图谱 "${name}"，包含${nodes.length}个节点`,
+      }
     });
   } catch (error) {
-    console.error("Generate graph error:", error);
+    console.error('图谱生成错误:', error);
     return NextResponse.json(
-      { error: "生成图谱失败" },
+      { 
+        success: false, 
+        error: '图谱生成失败，请重试',
+        details: error instanceof Error ? error.message : '未知错误'
+      },
       { status: 500 }
     );
   }
@@ -79,25 +193,38 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const user_id = searchParams.get('user_id');
-    const graph_type = searchParams.get('graph_type');
+    // 获取已保存的图谱列表
+    const mockSavedGraphs = [
+      {
+        id: '1',
+        name: '2024年1月智核决策图谱',
+        mode: '3d',
+        nodeCount: 15,
+        createdAt: new Date('2024-01-30'),
+        saveLocation: 'cloud',
+      },
+      {
+        id: '2', 
+        name: '量子计算知识网络',
+        mode: '2d',
+        nodeCount: 8,
+        createdAt: new Date('2024-01-25'),
+        saveLocation: 'local',
+      },
+    ];
 
-    let filteredGraphs = graphData;
+    return NextResponse.json({
+      success: true,
+      data: {
+        graphs: mockSavedGraphs,
+        total: mockSavedGraphs.length,
+      }
+    });
 
-    if (user_id) {
-      filteredGraphs = filteredGraphs.filter(graph => graph.user_id === user_id);
-    }
-
-    if (graph_type) {
-      filteredGraphs = filteredGraphs.filter(graph => graph.graph_type === graph_type);
-    }
-
-    return NextResponse.json({ graphs: filteredGraphs });
   } catch (error) {
-    console.error("Get graphs error:", error);
+    console.error('获取图谱列表错误:', error);
     return NextResponse.json(
-      { error: "获取图谱失败" },
+      { success: false, error: '获取图谱列表失败' },
       { status: 500 }
     );
   }

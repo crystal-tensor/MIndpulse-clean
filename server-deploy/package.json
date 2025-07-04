@@ -1,0 +1,20 @@
+{
+  "name": "mindpulse-api-server",
+  "version": "1.0.0",
+  "description": "MindPulse API Server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "install-deps": "npm install express cors dotenv mysql2 axios"
+  },
+  "dependencies": {
+    "express": "^4.18.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "mysql2": "^3.6.0",
+    "axios": "^1.6.0"
+  },
+  "keywords": ["mindpulse", "api", "ai"],
+  "author": "MindPulse Team"
+}

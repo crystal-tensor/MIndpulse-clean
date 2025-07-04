@@ -1,0 +1,10 @@
+RewriteEngine On
+
+# 处理CORS预检请求
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ api/index.php [L]
+
+# API路由
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ api/index.php [L,QSA]

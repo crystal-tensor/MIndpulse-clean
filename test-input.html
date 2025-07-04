@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>输入框测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        input {
+            flex: 1;
+            padding: 10px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+        button {
+            padding: 10px 20px;
+            background: #8b5cf6;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #7c3aed;
+        }
+        .messages {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 200px;
+            margin: 20px 0;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 8px;
+            background: #3a3a3a;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>输入框功能测试</h1>
+        
+        <div class="messages" id="messages">
+            <div class="message">系统：请在下方输入框中测试输入功能</div>
+        </div>
+        
+        <div class="input-container">
+            <input 
+                type="text" 
+                id="messageInput" 
+                placeholder="请输入消息..." 
+                autocomplete="off"
+            />
+            <button onclick="sendMessage()">发送</button>
+        </div>
+        
+        <div>
+            <h3>测试说明：</h3>
+            <ul>
+                <li>在输入框中输入文字，检查是否能正常输入多个字符</li>
+                <li>按回车键发送消息</li>
+                <li>检查输入框是否会失去焦点</li>
+                <li>检查是否有异常的重新渲染</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const messageInput = document.getElementById('messageInput');
+        const messagesContainer = document.getElementById('messages');
+        let messageCount = 0;
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+            
+            messageCount++;
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            messageDiv.textContent = `用户 ${messageCount}: ${message}`;
+            messagesContainer.appendChild(messageDiv);
+            
+            messageInput.value = '';
+            messageInput.focus();
+            
+            // 模拟AI回复
+            setTimeout(() => {
+                const aiDiv = document.createElement('div');
+                aiDiv.className = 'message';
+                aiDiv.style.background = '#4a4a4a';
+                aiDiv.textContent = `AI: 收到您的消息 "${message}"，长度为 ${message.length} 个字符`;
+                messagesContainer.appendChild(aiDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 500);
+        }
+
+        // 回车发送
+        messageInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // 监听输入变化
+        messageInput.addEventListener('input', function(e) {
+            console.log('输入变化:', e.target.value);
+        });
+
+        // 监听焦点变化
+        messageInput.addEventListener('focus', function() {
+            console.log('输入框获得焦点');
+        });
+
+        messageInput.addEventListener('blur', function() {
+            console.log('输入框失去焦点');
+        });
+    </script>
+</body>
+</html> 
