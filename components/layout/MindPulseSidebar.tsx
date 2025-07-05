@@ -136,6 +136,20 @@ const navigationItems: NavigationItem[] = [
     energyColor: "from-red-400 to-rose-500",
     description: "价值创造与交易平台",
     chineseElement: "五行",
+    subItems: [
+      {
+        id: "singularity-exchange-v2",
+        name: "V2 - 资源流转中枢",
+        path: "/singularity-exchange-v2",
+        description: "全新版本：技术方+资源方+资金方三方协作"
+      },
+      {
+        id: "singularity-exchange-v1",
+        name: "V1 - 经典交易所",
+        path: "/singularity-exchange",
+        description: "经典版本：AI资产交易平台"
+      }
+    ]
   },
 ];
 
