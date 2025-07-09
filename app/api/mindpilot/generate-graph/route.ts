@@ -29,50 +29,135 @@ interface KnowledgeNode {
   size: number;
 }
 
-// 图谱生成配置
+// 支持两种API参数格式
 interface GraphGenerationRequest {
   startDate?: string;
   endDate?: string;
-  mode: '2d' | '3d';
-  name: string;
-  saveLocation: 'cloud' | 'local';
+  mode?: '2d' | '3d';
+  name?: string;
+  saveLocation?: 'cloud' | 'local';
   localPath?: string;
+  // 新增支持的参数格式
+  messages?: any[];
+  graph_type?: string;
+  user_id?: string;
+  time_range?: any;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: GraphGenerationRequest = await request.json();
-    const { startDate, endDate, mode, name, saveLocation, localPath } = body;
+    
+    // 兼容两种参数格式
+    const { 
+      startDate, 
+      endDate, 
+      mode, 
+      name, 
+      saveLocation, 
+      localPath,
+      messages,
+      graph_type,
+      user_id,
+      time_range
+    } = body;
 
-    // 验证必需字段
-    if (!name.trim()) {
-      return NextResponse.json(
-        { success: false, error: '图谱名称不能为空' },
-        { status: 400 }
-      );
+    // 统一参数格式
+    const graphMode = mode || (graph_type === '3d' ? '3d' : '2d');
+    const graphName = name || `智核知识图谱_${new Date().toLocaleDateString()}`;
+    const saveLocation_ = saveLocation || 'cloud';
+    
+    // 如果有messages参数，使用传入的消息内容，否则使用模拟数据
+    let mockConversations = [];
+    
+    if (messages && messages.length > 0) {
+      // 从传入的消息构建对话内容
+      const conversationMap = new Map();
+      
+      messages.forEach((msg, index) => {
+        if (msg.role === 'user' || msg.role === 'assistant') {
+          const convId = `conv-${Math.floor(index / 2)}`;
+          if (!conversationMap.has(convId)) {
+            conversationMap.set(convId, {
+              id: convId,
+              content: '',
+              date: new Date(),
+              extractedConcepts: []
+            });
+          }
+          const conv = conversationMap.get(convId);
+          conv.content += msg.content + ' ';
+        }
+      });
+      
+      // 从内容中提取概念
+      conversationMap.forEach((conv, convId) => {
+        const content = conv.content.toLowerCase();
+        const concepts = [];
+        
+        // 提取技术相关概念
+        if (content.includes('ai') || content.includes('人工智能')) concepts.push('人工智能');
+        if (content.includes('量子') || content.includes('quantum')) concepts.push('量子计算');
+        if (content.includes('区块链') || content.includes('blockchain')) concepts.push('区块链');
+        if (content.includes('机器学习') || content.includes('ml')) concepts.push('机器学习');
+        if (content.includes('深度学习') || content.includes('deep learning')) concepts.push('深度学习');
+        if (content.includes('算法') || content.includes('algorithm')) concepts.push('算法优化');
+        if (content.includes('数据') || content.includes('data')) concepts.push('数据分析');
+        if (content.includes('网络') || content.includes('network')) concepts.push('网络架构');
+        if (content.includes('安全') || content.includes('security')) concepts.push('网络安全');
+        if (content.includes('云计算') || content.includes('cloud')) concepts.push('云计算');
+        if (content.includes('大数据') || content.includes('big data')) concepts.push('大数据');
+        if (content.includes('物联网') || content.includes('iot')) concepts.push('物联网');
+        if (content.includes('虚拟现实') || content.includes('vr')) concepts.push('虚拟现实');
+        if (content.includes('增强现实') || content.includes('ar')) concepts.push('增强现实');
+        if (content.includes('数字分身') || content.includes('digital twin')) concepts.push('数字分身');
+        if (content.includes('意识') || content.includes('consciousness')) concepts.push('意识模拟');
+        if (content.includes('神经网络') || content.includes('neural')) concepts.push('神经网络');
+        if (content.includes('自然语言') || content.includes('nlp')) concepts.push('自然语言处理');
+        if (content.includes('计算机视觉') || content.includes('cv')) concepts.push('计算机视觉');
+        if (content.includes('推荐系统') || content.includes('recommendation')) concepts.push('推荐系统');
+        if (content.includes('决策') || content.includes('decision')) concepts.push('智能决策');
+        if (content.includes('优化') || content.includes('optimization')) concepts.push('智能优化');
+        if (content.includes('自动化') || content.includes('automation')) concepts.push('自动化');
+        if (content.includes('机器人') || content.includes('robot')) concepts.push('机器人技术');
+        if (content.includes('金融') || content.includes('finance')) concepts.push('金融科技');
+        if (content.includes('医疗') || content.includes('medical')) concepts.push('医疗AI');
+        if (content.includes('教育') || content.includes('education')) concepts.push('教育技术');
+        if (content.includes('智能制造') || content.includes('smart manufacturing')) concepts.push('智能制造');
+        if (content.includes('自动驾驶') || content.includes('autonomous')) concepts.push('自动驾驶');
+        
+        // 如果没有找到特定概念，使用通用概念
+        if (concepts.length === 0) {
+          concepts.push('知识节点', '信息处理', '系统架构');
+        }
+        
+        conv.extractedConcepts = concepts.slice(0, 5); // 限制概念数量
+      });
+      
+      mockConversations = Array.from(conversationMap.values());
+    } else {
+      // 使用默认模拟数据
+      mockConversations = [
+        {
+          id: 'conv-001',
+          content: '讨论量子计算在金融决策中的应用',
+          date: new Date('2024-01-15'),
+          extractedConcepts: ['量子计算', '金融决策', '优化算法']
+        },
+        {
+          id: 'conv-002',
+          content: '分析人工智能在资产配置中的角色',
+          date: new Date('2024-01-20'),
+          extractedConcepts: ['人工智能', '资产配置', '风险管理']
+        },
+        {
+          id: 'conv-003',
+          content: '探讨数字分身的意识模拟技术',
+          date: new Date('2024-01-25'),
+          extractedConcepts: ['数字分身', '意识模拟', '神经网络']
+        },
+      ];
     }
-
-    // 模拟从智核对话中提取知识节点
-    const mockConversations = [
-      {
-        id: 'conv-001',
-        content: '讨论量子计算在金融决策中的应用',
-        date: new Date('2024-01-15'),
-        extractedConcepts: ['量子计算', '金融决策', '优化算法']
-      },
-      {
-        id: 'conv-002',
-        content: '分析人工智能在资产配置中的角色',
-        date: new Date('2024-01-20'),
-        extractedConcepts: ['人工智能', '资产配置', '风险管理']
-      },
-      {
-        id: 'conv-003',
-        content: '探讨数字分身的意识模拟技术',
-        date: new Date('2024-01-25'),
-        extractedConcepts: ['数字分身', '意识模拟', '神经网络']
-      },
-    ];
 
     // 根据时间范围过滤对话
     let filteredConversations = mockConversations;
@@ -90,11 +175,42 @@ export async function POST(request: NextRequest) {
     const categories = ['quantum', 'ai', 'finance', 'consciousness', 'technology'];
     const colors = ['#8B5CF6', '#10B981', '#F59E0B', '#EF4444', '#3B82F6'];
 
+    // 计算概念频率和重要性
+    const conceptFrequency = new Map<string, number>();
+    const conceptImportance = new Map<string, number>();
+    
+    filteredConversations.forEach((conv) => {
+      conv.extractedConcepts.forEach((concept: string) => {
+        conceptFrequency.set(concept, (conceptFrequency.get(concept) || 0) + 1);
+        
+        // 基于概念长度和关键词计算重要性
+        let importance = 0.3; // 基础重要性
+        
+        // 技术关键词加权
+        if (concept.includes('AI') || concept.includes('人工智能')) importance += 0.4;
+        if (concept.includes('量子')) importance += 0.3;
+        if (concept.includes('算法') || concept.includes('优化')) importance += 0.2;
+        if (concept.includes('决策') || concept.includes('智能')) importance += 0.2;
+        if (concept.includes('分析') || concept.includes('处理')) importance += 0.1;
+        
+        // 概念复杂度加权
+        if (concept.length > 8) importance += 0.1;
+        if (concept.length > 12) importance += 0.1;
+        
+        conceptImportance.set(concept, Math.max(conceptImportance.get(concept) || 0, importance));
+      });
+    });
+
     let nodeId = 1;
     filteredConversations.forEach((conv, convIndex) => {
-      conv.extractedConcepts.forEach((concept, conceptIndex) => {
+      conv.extractedConcepts.forEach((concept: string, conceptIndex: number) => {
         const category = categories[conceptIndex % categories.length];
         const color = colors[conceptIndex % colors.length];
+        
+        // 基于频率和重要性计算权重
+        const frequency = conceptFrequency.get(concept) || 1;
+        const importance = conceptImportance.get(concept) || 0.3;
+        const weight = Math.min(1.0, 0.3 + (frequency * 0.2) + importance);
         
         // 为3D模式添加z坐标
         const node: KnowledgeNode = {
@@ -105,12 +221,12 @@ export async function POST(request: NextRequest) {
           level: Math.floor(Math.random() * 5) + 1,
           x: 100 + (nodeId * 80) % 600,
           y: 100 + (nodeId * 60) % 400,
-          z: mode === '3d' ? 50 + (nodeId * 30) % 200 : 0,
+          z: graphMode === '3d' ? 50 + (nodeId * 30) % 200 : 0,
           color,
           sourceConversation: conv.id,
           extractedTime: conv.date,
-          confidence: 0.8 + Math.random() * 0.2,
-          size: 6 + Math.floor(Math.random() * 8),
+          confidence: weight,
+          size: Math.floor(weight * 20 + 10), // 基于权重的大小
         };
         
         nodes.push(node);
@@ -119,6 +235,8 @@ export async function POST(request: NextRequest) {
     });
 
     // 建立节点间的连接（基于共现和语义相似性）
+    const connections: Array<{source: string, target: string, weight: number}> = [];
+    
     nodes.forEach((node, index) => {
       // 与同一对话中的其他节点建立连接
       const sameConvNodes = nodes.filter(n => 
@@ -127,6 +245,12 @@ export async function POST(request: NextRequest) {
       sameConvNodes.forEach(connNode => {
         if (!node.connections.includes(connNode.id)) {
           node.connections.push(connNode.id);
+          // 同一对话中的节点连接权重较高
+          connections.push({
+            source: node.id,
+            target: connNode.id,
+            weight: 0.8 + Math.random() * 0.2
+          });
         }
       });
 
@@ -138,6 +262,12 @@ export async function POST(request: NextRequest) {
         if (similarNodes.length > 0) {
           const randomSimilar = similarNodes[Math.floor(Math.random() * similarNodes.length)];
           node.connections.push(randomSimilar.id);
+          // 相似类别的连接权重较低
+          connections.push({
+            source: node.id,
+            target: randomSimilar.id,
+            weight: 0.3 + Math.random() * 0.4
+          });
         }
       }
     });
@@ -145,37 +275,64 @@ export async function POST(request: NextRequest) {
     // 图谱元数据
     const graphMetadata = {
       id: Date.now().toString(),
-      name,
-      mode,
+      name: graphName,
+      mode: graphMode,
       nodeCount: nodes.length,
-      connectionCount: nodes.reduce((sum, node) => sum + node.connections.length, 0),
+      connectionCount: connections.length,
       timeRange: {
         start: startDate || filteredConversations[0]?.date,
         end: endDate || filteredConversations[filteredConversations.length - 1]?.date,
       },
-      saveLocation,
-      localPath: saveLocation === 'local' ? localPath : undefined,
+      saveLocation: saveLocation_,
+      localPath: saveLocation_ === 'local' ? localPath : undefined,
       createdAt: new Date(),
       generatedFrom: filteredConversations.length,
     };
 
+    // 生成图谱可视化
+    const entities = nodes.map(node => ({
+      id: node.id,
+      name: node.name,
+      type: node.category,
+      weight: node.confidence,
+      x: node.x,
+      y: node.y,
+      z: node.z,
+      color: node.color,
+      size: node.size
+    }));
+
+    const relationships = connections.map(conn => ({
+      source: conn.source,
+      target: conn.target,
+      type: "relates_to",
+      weight: conn.weight,
+    }));
+
+    const graph_url = generateGraphVisualization(entities, relationships, graphMode);
+
     // 模拟保存过程
-    if (saveLocation === 'cloud') {
-      // 云端保存逻辑
-      console.log(`图谱 "${name}" 已保存到云端`);
-    } else if (saveLocation === 'local' && localPath) {
-      // 本地保存逻辑
-      console.log(`图谱 "${name}" 已保存到本地路径: ${localPath}`);
+    if (saveLocation_ === 'cloud') {
+      console.log(`图谱 "${graphName}" 已保存到云端`);
+    } else if (saveLocation_ === 'local' && localPath) {
+      console.log(`图谱 "${graphName}" 已保存到本地路径: ${localPath}`);
     }
 
     return NextResponse.json({
       success: true,
+      graph_url,
+      graph_data: {
+        nodes,
+        connections,
+        metadata: graphMetadata,
+      },
+      messages_processed: filteredConversations.length,
       data: {
         graph: {
           metadata: graphMetadata,
           nodes,
         },
-        message: `成功生成${mode.toUpperCase()}知识图谱 "${name}"，包含${nodes.length}个节点`,
+        message: `成功生成${graphMode.toUpperCase()}知识图谱 "${graphName}"，包含${nodes.length}个节点和${connections.length}条连接`,
       }
     });
   } catch (error) {
@@ -373,18 +530,16 @@ function generate2DVisualization(nodes: any[], edges: any[]) {
         }
         .node { 
           position: absolute; 
-          background: rgba(74, 222, 128, 0.8);
-          border: 2px solid #22c55e;
           border-radius: 50%; 
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #1f2937;
+          color: white;
           font-weight: bold;
-          font-size: 12px;
           cursor: pointer;
           transition: all 0.3s ease;
           box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+          text-shadow: 0 0 2px rgba(0,0,0,0.5);
         }
         .node:hover {
           transform: scale(1.2);
@@ -421,31 +576,66 @@ function generate2DVisualization(nodes: any[], edges: any[]) {
           const targetNode = nodes.find(n => n.id === edge.target);
           if (!sourceNode || !targetNode) return '';
           
-          const dx = targetNode.x - sourceNode.x;
-          const dy = targetNode.y - sourceNode.y;
+          // 计算节点中心位置
+          const sourceSize = sourceNode.weight * 40 + 20;
+          const targetSize = targetNode.weight * 40 + 20;
+          
+          const sourceCenterX = sourceNode.x;
+          const sourceCenterY = sourceNode.y;
+          
+          const targetCenterX = targetNode.x;
+          const targetCenterY = targetNode.y;
+          
+          // 计算方向向量
+          const dx = targetCenterX - sourceCenterX;
+          const dy = targetCenterY - sourceCenterY;
           const length = Math.sqrt(dx * dx + dy * dy);
+          
+          // 避免零长度连接
+          if (length < 1) return '';
+          
+          // 计算单位向量
+          const unitX = dx / length;
+          const unitY = dy / length;
+          
+          // 计算连接线起点（从源节点边缘开始）
+          const startX = sourceCenterX + unitX * (sourceSize / 2);
+          const startY = sourceCenterY + unitY * (sourceSize / 2);
+          
+          // 计算连接线长度（减去两个节点的半径）
+          const lineLength = Math.max(1, length - (sourceSize / 2) - (targetSize / 2));
+          
           const angle = Math.atan2(dy, dx) * 180 / Math.PI;
           
+          // 根据权重计算线条粗细 (1-8px)
+          const lineWidth = Math.max(1, Math.min(8, Math.round(edge.weight * 8)));
+          
           return `<div class="edge" style="
-            left: ${sourceNode.x}px;
-            top: ${sourceNode.y}px;
-            width: ${length}px;
-            height: 2px;
+            left: ${startX}px;
+            top: ${startY}px;
+            width: ${lineLength}px;
+            height: ${lineWidth}px;
             transform: rotate(${angle}deg);
-            opacity: ${edge.weight};
+            opacity: ${0.4 + edge.weight * 0.6};
           "></div>`;
         }).join('')}
         
-        ${nodes.map(node => `
+        ${nodes.map(node => {
+          const nodeSize = node.weight * 40 + 20; // 更大的尺寸差异 (20-60px)
+          return `
           <div class="node" style="
-            left: ${node.x - (node.weight * 15 + 15)}px;
-            top: ${node.y - (node.weight * 15 + 15)}px;
-            width: ${(node.weight * 30 + 30)}px;
-            height: ${(node.weight * 30 + 30)}px;
+            left: ${node.x - nodeSize/2}px;
+            top: ${node.y - nodeSize/2}px;
+            width: ${nodeSize}px;
+            height: ${nodeSize}px;
+            font-size: ${Math.max(10, nodeSize * 0.2)}px;
+            background: ${node.color || 'rgba(74, 222, 128, 0.8)'};
+            border: 2px solid ${node.color || '#22c55e'};
           " title="${node.name}">
-            ${node.name.substring(0, 6)}
+            ${node.name.substring(0, Math.max(4, Math.floor(nodeSize / 8)))}
           </div>
-        `).join('')}
+        `;
+        }).join('')}
       </div>
       <div class="stats">
         节点: ${nodes.length} | 边: ${edges.length}
@@ -458,7 +648,7 @@ function generate2DVisualization(nodes: any[], edges: any[]) {
 }
 
 function generate3DVisualization(nodes: any[], edges: any[]) {
-  // 生成3D图谱的HTML可视化
+  // 生成3D图谱的HTML可视化，包含连接线
   const html = `
     <!DOCTYPE html>
     <html lang="zh-CN">
@@ -509,6 +699,14 @@ function generate3DVisualization(nodes: any[], edges: any[]) {
           transform: scale(1.3);
           background: rgba(168, 85, 247, 0.9);
         }
+        .edge-3d {
+          position: absolute;
+          background: linear-gradient(90deg, rgba(107, 114, 128, 0.6), rgba(147, 51, 234, 0.6));
+          transform-origin: left center;
+          pointer-events: none;
+          border-radius: 2px;
+          box-shadow: 0 0 10px rgba(107, 114, 128, 0.3);
+        }
         .title {
           position: absolute;
           top: 20px;
@@ -536,17 +734,81 @@ function generate3DVisualization(nodes: any[], edges: any[]) {
       <div class="title">3D知识图谱</div>
       <div class="graph-3d">
         <div class="scene">
-          ${nodes.map(node => `
+          ${edges.map(edge => {
+            const sourceNode = nodes.find(n => n.id === edge.source);
+            const targetNode = nodes.find(n => n.id === edge.target);
+            if (!sourceNode || !targetNode) return '';
+            
+            // 计算节点中心位置
+            const sourceSize = sourceNode.weight * 30 + 15;
+            const targetSize = targetNode.weight * 30 + 15;
+            
+            const sourceCenterX = sourceNode.x;
+            const sourceCenterY = sourceNode.y;
+            const sourceCenterZ = sourceNode.z || 0;
+            
+            const targetCenterX = targetNode.x;
+            const targetCenterY = targetNode.y;
+            const targetCenterZ = targetNode.z || 0;
+            
+            // 计算方向向量
+            const dx = targetCenterX - sourceCenterX;
+            const dy = targetCenterY - sourceCenterY;
+            const dz = targetCenterZ - sourceCenterZ;
+            
+            // 计算3D距离
+            const length = Math.sqrt(dx * dx + dy * dy + dz * dz);
+            
+            // 避免零长度连接
+            if (length < 1) return '';
+            
+            // 计算单位向量
+            const unitX = dx / length;
+            const unitY = dy / length;
+            const unitZ = dz / length;
+            
+            // 计算连接线起点（从源节点边缘开始）
+            const startX = sourceCenterX + unitX * (sourceSize / 2);
+            const startY = sourceCenterY + unitY * (sourceSize / 2);
+            const startZ = sourceCenterZ + unitZ * (sourceSize / 2);
+            
+            // 计算连接线长度（减去两个节点的半径）
+            const lineLength = Math.max(1, length - (sourceSize / 2) - (targetSize / 2));
+            
+            // 计算旋转角度
+            const angleY = Math.atan2(dx, dz) * 180 / Math.PI;
+            const angleX = Math.atan2(-dy, Math.sqrt(dx * dx + dz * dz)) * 180 / Math.PI;
+            
+            // 根据权重计算线条粗细 (1-6px)
+            const lineWidth = Math.max(1, Math.min(6, Math.round(edge.weight * 6)));
+            
+            return `<div class="edge-3d" style="
+              left: ${200 + startX}px;
+              top: ${200 + startY}px;
+              width: ${lineLength}px;
+              height: ${lineWidth}px;
+              transform: translateZ(${startZ}px) rotateY(${angleY}deg) rotateX(${angleX}deg);
+              opacity: ${0.4 + edge.weight * 0.6};
+            "></div>`;
+          }).join('')}
+          
+          ${nodes.map(node => {
+            const nodeSize = node.weight * 30 + 15; // 更大的尺寸差异 (15-45px)
+            return `
             <div class="node-3d" style="
-              left: ${200 + node.x}px;
-              top: ${200 + node.y}px;
+              left: ${200 + node.x - nodeSize/2}px;
+              top: ${200 + node.y - nodeSize/2}px;
               transform: translateZ(${node.z || 0}px);
-              width: ${(node.weight * 20 + 20)}px;
-              height: ${(node.weight * 20 + 20)}px;
+              width: ${nodeSize}px;
+              height: ${nodeSize}px;
+              font-size: ${Math.max(8, nodeSize * 0.25)}px;
+              background: ${node.color || 'rgba(147, 51, 234, 0.8)'};
+              border: 2px solid ${node.color || '#a855f7'};
             " title="${node.name}">
-              ${node.name.substring(0, 4)}
+              ${node.name.substring(0, Math.max(3, Math.floor(nodeSize / 8)))}
             </div>
-          `).join('')}
+          `;
+          }).join('')}
         </div>
       </div>
       <div class="stats">
