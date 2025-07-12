@@ -137,3 +137,14 @@ yarn-error.log*
 next-env.d.ts
 .next-prod
 .next-prod/
+
+# Large files (>100MB)
+*.tar.gz
+*.bundle
+mindpulse-avalosol-complete.tar.gz
+mindpulse-complete-project.tar.gz
+mindpulse-complete.bundle
+mindpulse-full-deploy.tar.gz
+mindpulse-deploy.tar.gz
+mindpulse-php-api.tar.gz
+mindpulse-frontend-fixed.tar.gz
