@@ -49,8 +49,8 @@ MindPulse是一个基于Next.js构建的智能决策与意识探索平台，集�
 
 1. **克隆项目**
 ```bash
-git clone https://github.com/crystal-tensor/MindPulse.git
-cd MindPulse
+git clone https://github.com/crystal-tensor/MIndpulse-clean.git
+cd MIndpulse-clean
 ```
 
 2. **安装依赖** (⚠️ 必须先执行)
@@ -174,10 +174,10 @@ docker run -p 3000:3000 mindpulse
 
 ## 联系方式
 
-- 项目地址: [GitHub Repository]
-- 问题反馈: [GitHub Issues]
+- 项目地址: [GitHub Repository](https://github.com/crystal-tensor/MIndpulse-clean)
+- 问题反馈: [GitHub Issues](https://github.com/crystal-tensor/MIndpulse-clean/issues)
 - 邮箱: your-email@example.com
 
 ---
 
-**MindPulse** - 探索意识边界，织就智慧未来 🌟 
+**MindPulse** - 探索意识边界，织就智慧未来 🌟
